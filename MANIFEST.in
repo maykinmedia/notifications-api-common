@@ -1,0 +1,9 @@
+include *.rst
+include LICENSE
+include notifications_api_common/py.typed
+recursive-include notifications_api_common *.html
+recursive-include notifications_api_common *.txt
+recursive-include notifications_api_common *.po
+global-exclude __pycache__
+global-exclude *.py[co]
+

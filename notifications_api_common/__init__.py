@@ -1,0 +1,1 @@
+default_app_config = "notifications_api_common.apps.NotificationsApiCommonConfig"
