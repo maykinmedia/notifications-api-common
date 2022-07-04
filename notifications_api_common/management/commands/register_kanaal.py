@@ -5,7 +5,7 @@ from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 
-from ....client import get_client
+from ...client import get_client
 from ...kanalen import KANAAL_REGISTRY
 from ...models import NotificationsConfig
 

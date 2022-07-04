@@ -34,10 +34,11 @@ def get_client(url: str, url_is_api_root=False) -> Optional[Client]:
     if client is None:
         return None
 
-    APICredential = apps.get_model("vng_api_common", "APICredential")
+    # FIXME: use zgw-consumers
+    # APICredential = apps.get_model("vng_api_common", "APICredential")
 
     if url_is_api_root:
         client.base_url = url
 
-    client.auth = APICredential.get_auth(url)
+    # client.auth = APICredential.get_auth(url)
     return client

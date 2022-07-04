@@ -1,23 +1,43 @@
 import uuid
+from typing import Optional
 from urllib.parse import urljoin
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from zds_client import ClientAuth
+from solo.models import SingletonModel
+from zds_client import Client, ClientAuth
 
-from ..client import get_client
-from ..decorators import field_default
-from ..models import APICredential, ClientConfig
+from .client import get_client
 from .constants import SCOPE_NOTIFICATIES_PUBLICEREN_LABEL
 
 
-@field_default("api_root", "https://notificaties-api.vng.cloud/api/v1/")
-class NotificationsConfig(ClientConfig):
+class NotificationsConfig(SingletonModel):
+    api_root = models.URLField(
+        _("api root"), default="https://notificaties-api.vng.cloud/api/v1/", unique=True
+    )
+
     class Meta:
         verbose_name = _("Notificatiescomponentconfiguratie")
 
+    def __str__(self):
+        return self.api_root
+
+    def save(self, *args, **kwargs):
+        if not self.api_root.endswith("/"):
+            self.api_root = f"{self.api_root}/"
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_client(cls) -> Optional[Client]:
+        """
+        Construct a client, prepared with the required auth.
+        """
+        config = cls.get_solo()
+        return get_client(config.api_root, url_is_api_root=True)
+
+    # FIXME: use zgw-consumers
     def get_auth(self) -> ClientAuth:
         auth = APICredential.get_auth(
             self.api_root, scopes=[SCOPE_NOTIFICATIES_PUBLICEREN_LABEL]
