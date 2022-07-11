@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 from zds_client import Client, ClientAuth
+from zgw_consumers.service import Service
 
 from .client import get_client
 from .constants import SCOPE_NOTIFICATIES_PUBLICEREN_LABEL
@@ -36,13 +37,6 @@ class NotificationsConfig(SingletonModel):
         """
         config = cls.get_solo()
         return get_client(config.api_root, url_is_api_root=True)
-
-    # FIXME: use zgw-consumers
-    def get_auth(self) -> ClientAuth:
-        auth = APICredential.get_auth(
-            self.api_root, scopes=[SCOPE_NOTIFICATIES_PUBLICEREN_LABEL]
-        )
-        return auth
 
 
 class Subscription(models.Model):
