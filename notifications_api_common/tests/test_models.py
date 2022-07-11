@@ -8,6 +8,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from vng_api_common.tests import JWTAuthMixin
+from zgw_consumers.constants import APITypes
+from zgw_consumers.service import Service
 
 from ..constants import SCOPE_NOTIFICATIES_CONSUMEREN_LABEL
 from ..models import NotificationsConfig, Subscription
@@ -27,7 +29,10 @@ class SubscriptionTests(JWTAuthMixin, APITestCase):
 
         Kanaal.objects.create(naam="zaken")
         cls.config = NotificationsConfig.objects.create(
-            api_root="http://testserver/api/"
+            notifications_api_service=Service(
+                api_root="http://testserver/api/",
+                api_type=APITypes.nrc,
+            )
         )
 
     @patch(

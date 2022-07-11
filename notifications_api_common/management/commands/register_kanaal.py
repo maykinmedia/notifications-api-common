@@ -59,8 +59,16 @@ class Command(BaseCommand):
     def handle(self, **options):
         config = NotificationsConfig.get_solo()
 
+        if not config.notifications_api_service:
+            self.stderr.write(
+                "NotificationsConfig does not have a `notifications_api_service` configured"
+            )
+
         # use CLI arg or fall back to database config
-        api_root = options["notificaties_api_root"] or config.api_root
+        api_root = (
+            options["notificaties_api_root"]
+            or config.notifications_api_service.api_root
+        )
 
         # use CLI arg or fall back to setting
         kanaal = options["kanaal"] or settings.NOTIFICATIONS_KANAAL

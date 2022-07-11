@@ -6,6 +6,8 @@ from django.utils.translation import gettext as _
 import pytest
 from requests.exceptions import RequestException
 from zds_client.client import ClientError
+from zgw_consumers.constants import APITypes
+from zgw_consumers.service import Service
 
 from notifications_api_common.admin import register_webhook
 from notifications_api_common.models import NotificationsConfig, Subscription
@@ -16,12 +18,11 @@ from notifications_api_common.models import NotificationsConfig, Subscription
     return_value={"url": "https://example.com/api/v1/abonnementen/1"},
 )
 @pytest.mark.django_db
-def test_register_webhook_success(request_with_middleware, *mocks):
-
-    config = NotificationsConfig.get_solo()
-
+def test_register_webhook_success(
+    request_with_middleware, notifications_config, *mocks
+):
     subscription = Subscription.objects.create(
-        config=config,
+        config=notifications_config,
         callback_url="https://example.com/callback",
         client_id="client_id",
         secret="secret",
@@ -39,12 +40,11 @@ def test_register_webhook_success(request_with_middleware, *mocks):
 
 
 @pytest.mark.django_db
-def test_register_webhook_request_exception(request_with_middleware):
-
-    config = NotificationsConfig.get_solo()
-
+def test_register_webhook_request_exception(
+    request_with_middleware, notifications_config
+):
     Subscription.objects.create(
-        config=config,
+        config=notifications_config,
         callback_url="https://example.com/callback",
         client_id="client_id",
         secret="secret",
@@ -65,12 +65,9 @@ def test_register_webhook_request_exception(request_with_middleware):
 
 
 @pytest.mark.django_db
-def test_register_webhook_client_error(request_with_middleware):
-
-    config = NotificationsConfig.get_solo()
-
+def test_register_webhook_client_error(request_with_middleware, notifications_config):
     Subscription.objects.create(
-        config=config,
+        config=notifications_config,
         callback_url="https://example.com/callback",
         client_id="client_id",
         secret="secret",

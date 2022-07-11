@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.messages",
     "notifications_api_common",
+    "zgw_consumers",
     "testapp",
 ]
 

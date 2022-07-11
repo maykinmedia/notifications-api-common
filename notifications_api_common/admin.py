@@ -15,7 +15,10 @@ class SubscriptionInline(admin.TabularInline):
 
 @admin.register(NotificationsConfig)
 class NotificationsConfigAdmin(SingletonModelAdmin):
-    list_display = ("api_root", "subscriptions")
+    list_display = (
+        "notifications_api_service",
+        "subscriptions",
+    )
     inlines = [SubscriptionInline]
 
     def subscriptions(self, obj):

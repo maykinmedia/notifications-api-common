@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 from zds_client import Client, ClientAuth
+from zgw_consumers.constants import APITypes
 from zgw_consumers.service import Service
 
 from .client import get_client
@@ -15,20 +16,21 @@ from .constants import SCOPE_NOTIFICATIES_PUBLICEREN_LABEL
 
 
 class NotificationsConfig(SingletonModel):
-    api_root = models.URLField(
-        _("api root"), default="https://notificaties-api.vng.cloud/api/v1/", unique=True
+    notifications_api_service = models.ForeignKey(
+        Service,
+        limit_choices_to={"api_type": APITypes.nrc},
+        verbose_name=_("notifications api service"),
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
     )
 
     class Meta:
         verbose_name = _("Notificatiescomponentconfiguratie")
 
     def __str__(self):
-        return self.api_root
-
-    def save(self, *args, **kwargs):
-        if not self.api_root.endswith("/"):
-            self.api_root = f"{self.api_root}/"
-        super().save(*args, **kwargs)
+        api_root = getattr(self.notifications_api_service, "api_root", "")
+        return f"NotificationsConfig({api_root})"
 
     @classmethod
     def get_client(cls) -> Optional[Client]:
@@ -36,7 +38,9 @@ class NotificationsConfig(SingletonModel):
         Construct a client, prepared with the required auth.
         """
         config = cls.get_solo()
-        return get_client(config.api_root, url_is_api_root=True)
+        return get_client(
+            config.notifications_api_service.api_root, url_is_api_root=True
+        )
 
 
 class Subscription(models.Model):
@@ -85,7 +89,13 @@ class Subscription(models.Model):
         """
         Registers the webhook with the notification component.
         """
-        dummy_detail_url = urljoin(self.config.api_root, f"foo/{uuid.uuid4()}")
+        assert (
+            self.config.notifications_api_service
+        ), "No service for Notifications API configured"
+
+        dummy_detail_url = urljoin(
+            self.config.notifications_api_service.api_root, f"foo/{uuid.uuid4()}"
+        )
         client = get_client(dummy_detail_url)
 
         # This authentication is for the NC to call us. Thus, it's *not* for
