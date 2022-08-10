@@ -11,16 +11,13 @@ from zds_client import Client, ClientAuth
 from zgw_consumers.constants import APITypes
 from zgw_consumers.service import Service
 
-from .client import get_client
-from .constants import SCOPE_NOTIFICATIES_PUBLICEREN_LABEL
-
 
 class NotificationsConfig(SingletonModel):
     notifications_api_service = models.ForeignKey(
         Service,
         limit_choices_to={"api_type": APITypes.nrc},
         verbose_name=_("notifications api service"),
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
@@ -29,8 +26,14 @@ class NotificationsConfig(SingletonModel):
         verbose_name = _("Notificatiescomponentconfiguratie")
 
     def __str__(self):
-        api_root = getattr(self.notifications_api_service, "api_root", "")
-        return f"NotificationsConfig({api_root})"
+        api_root = (
+            self.notifications_api_service.api_root
+            if self.notifications_api_service
+            else _("no service configured")
+        )
+        return _("Notifications API configuration ({api_root})").format(
+            api_root=api_root
+        )
 
     @classmethod
     def get_client(cls) -> Optional[Client]:
@@ -38,9 +41,7 @@ class NotificationsConfig(SingletonModel):
         Construct a client, prepared with the required auth.
         """
         config = cls.get_solo()
-        return get_client(
-            config.notifications_api_service.api_root, url_is_api_root=True
-        )
+        return config.notifications_api_service.build_client()
 
 
 class Subscription(models.Model):
@@ -93,13 +94,12 @@ class Subscription(models.Model):
             self.config.notifications_api_service
         ), "No service for Notifications API configured"
 
-        dummy_detail_url = urljoin(
-            self.config.notifications_api_service.api_root, f"foo/{uuid.uuid4()}"
-        )
-        client = get_client(dummy_detail_url)
+        client = NotificationsConfig.get_client()
 
         # This authentication is for the NC to call us. Thus, it's *not* for
         # calling the NC to create a subscription.
+        # TODO should be replaced with `TokenAuth`
+        # see: https://github.com/maykinmedia/notifications-api-common/pull/1#discussion_r941450384
         self_auth = ClientAuth(
             client_id=self.client_id,
             secret=self.secret,

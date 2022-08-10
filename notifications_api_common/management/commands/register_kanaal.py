@@ -5,7 +5,6 @@ from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 
-from ...client import get_client
 from ...kanalen import KANAAL_REGISTRY
 from ...models import NotificationsConfig
 
@@ -20,7 +19,7 @@ def create_kanaal(api_root: str, kanaal: str) -> None:
     """
     Create a kanaal, if it doesn't exist yet.
     """
-    client = get_client(api_root, url_is_api_root=True)
+    client = NotificationsConfig.get_client()
 
     # look up the exchange in the registry
     _kanaal = next(k for k in KANAAL_REGISTRY if k.label == kanaal)

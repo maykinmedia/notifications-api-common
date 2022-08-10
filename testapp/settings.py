@@ -54,4 +54,4 @@ TEMPLATES = [
 
 ROOT_URLCONF = "testapp.urls"
 
-ZDS_CLIENT_CLASS = "zds_client.Client"
+ZGW_CONSUMERS_CLIENT_CLASS = "zds_client.Client"
