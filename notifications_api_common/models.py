@@ -51,8 +51,6 @@ class Subscription(models.Model):
     TODO: on change/update, update the subscription
     """
 
-    config = models.ForeignKey("NotificationsConfig", on_delete=models.CASCADE)
-
     callback_url = models.URLField(
         _("callback url"), help_text=_("Where to send the notifications (webhook url)")
     )
@@ -91,7 +89,7 @@ class Subscription(models.Model):
         Registers the webhook with the notification component.
         """
         assert (
-            self.config.notifications_api_service
+            NotificationsConfig.get_solo().notifications_api_service
         ), "No service for Notifications API configured"
 
         client = NotificationsConfig.get_client()

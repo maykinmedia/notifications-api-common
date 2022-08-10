@@ -8,18 +8,12 @@ from zds_client.client import ClientError
 from .models import NotificationsConfig, Subscription
 
 
-class SubscriptionInline(admin.TabularInline):
-    model = Subscription
-    extra = 0
-
-
 @admin.register(NotificationsConfig)
 class NotificationsConfigAdmin(SingletonModelAdmin):
     list_display = (
         "notifications_api_service",
         "subscriptions",
     )
-    inlines = [SubscriptionInline]
 
     def subscriptions(self, obj):
         urls = obj.exclude(subscription_set___subscription="").values_list(
