@@ -6,11 +6,9 @@ from django.utils.translation import gettext as _
 import pytest
 from requests.exceptions import RequestException
 from zds_client.client import ClientError
-from zgw_consumers.constants import APITypes
-from zgw_consumers.service import Service
 
 from notifications_api_common.admin import register_webhook
-from notifications_api_common.models import NotificationsConfig, Subscription
+from notifications_api_common.models import Subscription
 
 
 @patch(
