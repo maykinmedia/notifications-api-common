@@ -10,16 +10,7 @@ from .models import NotificationsConfig, Subscription
 
 @admin.register(NotificationsConfig)
 class NotificationsConfigAdmin(SingletonModelAdmin):
-    list_display = (
-        "notifications_api_service",
-        "subscriptions",
-    )
-
-    def subscriptions(self, obj):
-        urls = obj.exclude(subscription_set___subscription="").values_list(
-            "subscription_set___subscription"
-        )
-        return ", ".join(urls)
+    pass
 
 
 def register_webhook(modeladmin, request, queryset):

@@ -9,6 +9,8 @@ from zds_client import Client, ClientAuth
 from zgw_consumers.constants import APITypes
 from zgw_consumers.service import Service
 
+from .query import NotificationsConfigManager
+
 
 class NotificationsConfig(SingletonModel):
     notifications_api_service = models.ForeignKey(
@@ -19,6 +21,8 @@ class NotificationsConfig(SingletonModel):
         blank=True,
         null=True,
     )
+
+    objects = NotificationsConfigManager()
 
     class Meta:
         verbose_name = _("Notificatiescomponentconfiguratie")
@@ -39,7 +43,9 @@ class NotificationsConfig(SingletonModel):
         Construct a client, prepared with the required auth.
         """
         config = cls.get_solo()
-        return config.notifications_api_service.build_client()
+        if config.notifications_api_service:
+            return config.notifications_api_service.build_client()
+        return None
 
 
 class Subscription(models.Model):

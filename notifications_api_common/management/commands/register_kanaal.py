@@ -15,7 +15,7 @@ class KanaalExists(Exception):
     pass
 
 
-def create_kanaal(api_root: str, kanaal: str) -> None:
+def create_kanaal(kanaal: str) -> None:
     """
     Create a kanaal, if it doesn't exist yet.
     """
@@ -50,10 +50,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("kanaal", nargs="?", type=str, help="Name of kanaal")
-        parser.add_argument(
-            "--notificaties-api-root",
-            help="API root of the NC, default value taken from notifications config",
-        )
 
     def handle(self, **options):
         config = NotificationsConfig.get_solo()
@@ -63,17 +59,13 @@ class Command(BaseCommand):
                 "NotificationsConfig does not have a `notifications_api_service` configured"
             )
 
-        # use CLI arg or fall back to database config
-        api_root = (
-            options["notificaties_api_root"]
-            or config.notifications_api_service.api_root
-        )
+        api_root = config.notifications_api_service.api_root
 
         # use CLI arg or fall back to setting
         kanaal = options["kanaal"] or settings.NOTIFICATIONS_KANAAL
 
         try:
-            create_kanaal(api_root, kanaal)
+            create_kanaal(kanaal)
             self.stdout.write(f"Registered kanaal '{kanaal}' with {api_root}")
         except KanaalExists:
             self.stderr.write(f"Kanaal '{kanaal}' already exists within {api_root}")

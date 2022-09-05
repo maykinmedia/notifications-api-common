@@ -1,10 +1,11 @@
+from django.conf import settings
 from django.views.generic import TemplateView
 
 from .kanalen import KANAAL_REGISTRY
 
 
 class KanalenView(TemplateView):
-    template_name = "notifications_api_common/ref/kanalen.html"
+    template_name = settings.NOTIFICATIONS_KANALEN_TEMPLATE
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
