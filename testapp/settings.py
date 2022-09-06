@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "notifications_api_common",
     "zgw_consumers",
+    "simple_certmanager",
     "testapp",
 ]
 

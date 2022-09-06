@@ -37,6 +37,7 @@ Add the following apps
     'rest_framework',
     'solo',
     'zgw_consumers',
+    'simple_certmanager',
     ...
 
 to your ``INSTALLED_APPS`` setting.
