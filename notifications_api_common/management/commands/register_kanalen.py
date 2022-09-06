@@ -49,7 +49,14 @@ class Command(BaseCommand):
     help = "Create kanaal in notification component"
 
     def add_arguments(self, parser):
-        parser.add_argument("kanaal", nargs="?", type=str, help="Name of kanaal")
+        parser.add_argument(
+            "--kanalen",
+            nargs="*",
+            type=str,
+            help=(
+                "Names of the kanalen (will use the `KANAAL_REGISTRY` if not specified)"
+            ),
+        )
 
     def handle(self, **options):
         config = NotificationsConfig.get_solo()
@@ -62,10 +69,13 @@ class Command(BaseCommand):
         api_root = config.notifications_api_service.api_root
 
         # use CLI arg or fall back to setting
-        kanaal = options["kanaal"] or settings.NOTIFICATIONS_KANAAL
+        kanalen = options["kanalen"] or sorted(
+            [kanaal.label for kanaal in KANAAL_REGISTRY]
+        )
 
-        try:
-            create_kanaal(kanaal)
-            self.stdout.write(f"Registered kanaal '{kanaal}' with {api_root}")
-        except KanaalExists:
-            self.stderr.write(f"Kanaal '{kanaal}' already exists within {api_root}")
+        for kanaal in kanalen:
+            try:
+                create_kanaal(kanaal)
+                self.stdout.write(f"Registered kanaal '{kanaal}' with {api_root}")
+            except KanaalExists:
+                self.stderr.write(f"Kanaal '{kanaal}' already exists within {api_root}")

@@ -70,7 +70,7 @@ is idempotent:
 
 .. code-block:: bash
 
-    python manage.py register_kanaal
+    python manage.py register_kanalen
 
 **Usage in code**
 
