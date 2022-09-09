@@ -49,7 +49,6 @@ Three additional settings are available:
 * ``NOTIFICATIONS_DISABLED``: a boolean, default ``False``. Set to ``True`` to
   completely disable the sending of notifications.
 * ``IS_HTTPS``: a boolean, default ``False``. Set to ``True`` to indicate that HTTPS is being used
-* ``NOTIFICATIONS_KANALEN_TEMPLATE``: a string. Set this to a path that contains a template to use for the ``KanalenView``
 
 Make sure to migrate your database:
 

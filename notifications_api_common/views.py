@@ -5,7 +5,7 @@ from .kanalen import KANAAL_REGISTRY
 
 
 class KanalenView(TemplateView):
-    template_name = settings.NOTIFICATIONS_KANALEN_TEMPLATE
+    template_name = "notifications_api_common/kanalen.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
