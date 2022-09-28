@@ -1,5 +1,7 @@
 import os
 
+DEBUG = True
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 SECRET_KEY = "so-secret-i-cant-believe-you-are-looking-at-this"
@@ -21,9 +23,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.admin",
     "django.contrib.messages",
-    "notifications_api_common",
-    "zgw_consumers",
+    "django.contrib.staticfiles",
+    "solo",
     "simple_certmanager",
+    "zgw_consumers",
+    "notifications_api_common",
     "testapp",
 ]
 
@@ -36,6 +40,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+STATIC_URL = "/static/"
 
 TEMPLATES = [
     {
