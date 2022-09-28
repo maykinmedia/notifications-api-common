@@ -1,12 +1,12 @@
 import logging
 
-from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 
 from ...kanalen import KANAAL_REGISTRY
 from ...models import NotificationsConfig
+from ...settings import get_setting
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ def create_kanaal(kanaal: str) -> None:
 
     # build up own documentation URL
     domain = Site.objects.get_current().domain
-    protocol = "https" if settings.IS_HTTPS else "http"
+    protocol = "https" if get_setting("IS_HTTPS") else "http"
     documentation_url = (
         f"{protocol}://{domain}{reverse('notifications:kanalen')}#{kanaal}"
     )
@@ -63,7 +63,8 @@ class Command(BaseCommand):
 
         if not config.notifications_api_service:
             self.stderr.write(
-                "NotificationsConfig does not have a `notifications_api_service` configured"
+                "NotificationsConfig does not have a "
+                "`notifications_api_service` configured"
             )
 
         api_root = config.notifications_api_service.api_root

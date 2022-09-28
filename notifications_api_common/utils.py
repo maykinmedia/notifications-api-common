@@ -3,6 +3,8 @@ from django.db import models
 from django.http import HttpRequest
 from django.urls import Resolver404, ResolverMatch, get_resolver, get_script_prefix
 
+from rest_framework.viewsets import ViewSet
+
 from .kanalen import Kanaal
 
 

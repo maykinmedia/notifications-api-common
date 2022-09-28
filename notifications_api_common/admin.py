@@ -24,7 +24,8 @@ def register_webhook(modeladmin, request, queryset):
             messages.error(
                 request,
                 _(
-                    "Something went wrong while registering subscription for {callback}: {exception}"
+                    "Something went wrong while registering subscription "
+                    "for {callback}: {exception}"
                 ).format(callback=sub.callback_url, exception=e),
             )
 

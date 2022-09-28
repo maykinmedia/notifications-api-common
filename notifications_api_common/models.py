@@ -101,7 +101,7 @@ class Subscription(models.Model):
         # This authentication is for the NC to call us. Thus, it's *not* for
         # calling the NC to create a subscription.
         # TODO should be replaced with `TokenAuth`
-        # see: https://github.com/maykinmedia/notifications-api-common/pull/1#discussion_r941450384
+        # see: maykinmedia/notifications-api-common/pull/1#discussion_r941450384
         self_auth = ClientAuth(
             client_id=self.client_id,
             secret=self.secret,

@@ -32,23 +32,22 @@ Add the following apps
 .. code-block:: python
 
     ...,
-    'django.contrib.sites',
-    'notifications_api_common',
-    'rest_framework',
-    'solo',
-    'zgw_consumers',
-    'simple_certmanager',
+    "django.contrib.sites",
+    "rest_framework",
+    "solo",
+    "simple_certmanager",
+    "zgw_consumers",
+    "notifications_api_common",
     ...
 
 to your ``INSTALLED_APPS`` setting.
 
 Three additional settings are available:
 
-* ``NOTIFICATIONS_KANAAL``: a string, the label of the 'kanaal' to register
-  with the NC
 * ``NOTIFICATIONS_DISABLED``: a boolean, default ``False``. Set to ``True`` to
   completely disable the sending of notifications.
-* ``IS_HTTPS``: a boolean, default ``False``. Set to ``True`` to indicate that HTTPS is being used
+* ``IS_HTTPS``: a boolean, default ``True``. Set to ``False`` to indicate that
+  no HTTPS is being used.
 
 Make sure to migrate your database:
 
@@ -65,7 +64,7 @@ for the NC to use.
 Make sure you also have the ``Sites`` set up correctly, as the domain
 configured there is used to build the documentation URL.
 
-After entering the configuration, you can register your 'kanaal' - this action
+After entering the configuration, you can register your channels - this action
 is idempotent:
 
 .. code-block:: bash
@@ -79,17 +78,17 @@ Define at least one ``Kanaal`` instance, typically this would go in
 
 .. code-block:: python
 
-    from notifications_api_common.kanalen import Kanaal
-
     from zrc.datamodel.models import Zaak
 
+    from notifications_api_common.kanalen import Kanaal
+
     ZAKEN = Kanaal(
-        'zaken',  # label of the channel/exchange
+        "zaken",  # label of the channel/exchange
         main_resource=Zaak,  # main object for this channel/exchange
         kenmerken=(  # fields to include as 'kenmerken'
-            'bronorganisatie',
-            'zaaktype',
-            'vertrouwelijkheidaanduiding'
+            "bronorganisatie",
+            "zaaktype",
+            "vertrouwelijkheidaanduiding"
         )
     )
 

@@ -3,7 +3,6 @@ from contextlib import contextmanager
 from typing import Dict, List, Union
 from urllib.parse import urlparse
 
-from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
 from django.utils import timezone
@@ -16,6 +15,7 @@ from zds_client import ClientError
 from .api.serializers import NotificatieSerializer
 from .kanalen import Kanaal
 from .models import NotificationsConfig
+from .settings import get_setting
 from .utils import get_resource_for_path, get_viewset_for_path
 
 logger = logging.getLogger(__name__)
@@ -148,7 +148,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
     def notify(
         self, status_code: int, data: Union[List, Dict], instance: models.Model = None
     ) -> None:
-        if settings.NOTIFICATIONS_DISABLED:
+        if get_setting("NOTIFICATIONS_DISABLED"):
             return
 
         # do nothing unless we have a 'success' status code - early exit here
@@ -171,8 +171,9 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # We've performed all the work that can raise uncaught exceptions that we can
         # still put inside an atomic transaction block. Next, we schedule the actual
         # sending block, which allows failures that are logged. Any unexpected errors
-        # here will still cause the transaction to be comitted (in the default behaviour),
-        # but the exception will be visible in the error monitoring (such as Sentry).
+        # here will still cause the transaction to be comitted (in the default
+        # behaviour), but the exception will be visible in the error monitoring (such
+        # as Sentry).
         #
         # The _send function is passed down to the scheduler, which is by default to
         # execute it on transaction commit.
