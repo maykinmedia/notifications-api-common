@@ -1,13 +1,19 @@
 import os
 
+DEBUG = True
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 SECRET_KEY = "so-secret-i-cant-believe-you-are-looking-at-this"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "notifications_api_common.db"),
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("PGDATABASE", "notifications_api_common"),
+        "USER": os.getenv("PGUSER", "postgres"),
+        "PASSWORD": os.getenv("PGPASSWORD", "postgres"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", 5432),
     }
 }
 
@@ -16,6 +22,11 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.sessions",
     "django.contrib.admin",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "solo",
+    "simple_certmanager",
+    "zgw_consumers",
     "notifications_api_common",
     "testapp",
 ]
@@ -29,6 +40,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+STATIC_URL = "/static/"
 
 TEMPLATES = [
     {
@@ -47,3 +60,5 @@ TEMPLATES = [
 ]
 
 ROOT_URLCONF = "testapp.urls"
+
+ZGW_CONSUMERS_CLIENT_CLASS = "zds_client.Client"
