@@ -7,6 +7,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
 from django.utils import timezone
 
+import celery
 from djangorestframework_camel_case.util import camelize
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.routers import SimpleRouter
@@ -162,6 +163,14 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # build the content of the notification
         message = self.construct_message(data, instance=instance)
 
+        self.send_notification.delay(status_code, message)
+
+    @staticmethod
+    @celery.current_app.task()
+    def send_notification(
+        status_code: int,
+        message: dict,
+    ) -> None:
         # build the client from the singleton config. This will raise an
         # exception if the config is not complete. We want this to hard-fail!
         client = NotificationsConfig.get_client()
@@ -194,7 +203,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
                     },
                 )
 
-        self.schedule_notification(_send)
+        NotificationMixin.schedule_notification(_send)
 
     @staticmethod
     def schedule_notification(send_function: callable):
