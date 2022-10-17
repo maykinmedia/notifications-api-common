@@ -3,11 +3,13 @@ from contextlib import contextmanager
 from typing import Dict, List, Union
 from urllib.parse import urlparse
 
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
 from django.utils import timezone
 
 import celery
+import requests
 from djangorestframework_camel_case.util import camelize
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.routers import SimpleRouter
@@ -20,6 +22,10 @@ from .settings import get_setting
 from .utils import get_resource_for_path, get_viewset_for_path
 
 logger = logging.getLogger(__name__)
+
+
+class NotificationException(Exception):
+    pass
 
 
 @contextmanager
@@ -166,7 +172,15 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         self.send_notification.delay(status_code, message)
 
     @staticmethod
-    @celery.current_app.task()
+    @celery.current_app.task(
+        autoretry_for=(
+            NotificationException,
+            requests.RequestException,
+        ),
+        max_retries=settings.NOTIFICATION_DELIVERY_MAX_RETRIES,
+        retry_backoff=settings.NOTIFICATION_DELIVERY_RETRY_BACKOFF,
+        retry_backoff_max=settings.NOTIFICATION_DELIVERY_RETRY_BACKOFF_MAX,
+    )
     def send_notification(
         status_code: int,
         message: dict,
@@ -177,40 +191,21 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         if client is None:
             raise RuntimeError("Could not build a client for Notifications API")
 
-        # We've performed all the work that can raise uncaught exceptions that we can
-        # still put inside an atomic transaction block. Next, we schedule the actual
-        # sending block, which allows failures that are logged. Any unexpected errors
-        # here will still cause the transaction to be comitted (in the default
-        # behaviour), but the exception will be visible in the error monitoring (such
-        # as Sentry).
-        #
-        # The _send function is passed down to the scheduler, which is by default to
-        # execute it on transaction commit.
-
-        def _send():
-            try:
-                client.create("notificaties", message)
-            # any unexpected errors should show up in error-monitoring, so we only
-            # catch ClientError exceptions
-            except ClientError:
-                logger.warning(
-                    "Could not deliver message to %s",
-                    client.base_url,
-                    exc_info=True,
-                    extra={
-                        "notification_msg": message,
-                        "status_code": status_code,
-                    },
-                )
-
-        NotificationMixin.schedule_notification(_send)
-
-    @staticmethod
-    def schedule_notification(send_function: callable):
-        """
-        Ensure that a notification is scheduled to be sent.
-        """
-        transaction.on_commit(send_function)
+        try:
+            client.create("notificaties", message)
+        # any unexpected errors should show up in error-monitoring, so we only
+        # catch ClientError exceptions
+        except ClientError:
+            logger.warning(
+                "Could not deliver message to %s",
+                client.base_url,
+                exc_info=True,
+                extra={
+                    "notification_msg": message,
+                    "status_code": status_code,
+                },
+            )
+            raise NotificationException
 
 
 class NotificationCreateMixin(NotificationMixin):
