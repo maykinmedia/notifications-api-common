@@ -173,6 +173,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
 
     @staticmethod
     @celery.current_app.task(
+        bind=True,
         autoretry_for=(
             NotificationException,
             requests.RequestException,
@@ -182,6 +183,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         retry_backoff_max=settings.NOTIFICATION_DELIVERY_RETRY_BACKOFF_MAX,
     )
     def send_notification(
+        task,
         status_code: int,
         message: dict,
     ) -> None:
@@ -196,14 +198,17 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # any unexpected errors should show up in error-monitoring, so we only
         # catch ClientError exceptions
         except ClientError:
+            extra = {
+                "notification_msg": message,
+                "status_code": status_code,
+            }
+            if task.request.retries >= task.max_retries:
+                extra["final_try"] = True
             logger.warning(
                 "Could not deliver message to %s",
                 client.base_url,
                 exc_info=True,
-                extra={
-                    "notification_msg": message,
-                    "status_code": status_code,
-                },
+                extra=extra,
             )
             raise NotificationException
 
