@@ -3,7 +3,6 @@ from contextlib import contextmanager
 from typing import Dict, List, Union
 from urllib.parse import urlparse
 
-from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
 from django.utils import timezone
@@ -19,6 +18,7 @@ from .api.serializers import NotificatieSerializer
 from .kanalen import Kanaal
 from .models import NotificationsConfig
 from .settings import get_setting
+from .task import add_autoretry_behaviour
 from .utils import get_resource_for_path, get_viewset_for_path
 
 logger = logging.getLogger(__name__)
@@ -172,16 +172,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         self.send_notification.delay(status_code, message)
 
     @staticmethod
-    @celery.current_app.task(
-        bind=True,
-        autoretry_for=(
-            NotificationException,
-            requests.RequestException,
-        ),
-        max_retries=settings.NOTIFICATION_DELIVERY_MAX_RETRIES,
-        retry_backoff=settings.NOTIFICATION_DELIVERY_RETRY_BACKOFF,
-        retry_backoff_max=settings.NOTIFICATION_DELIVERY_RETRY_BACKOFF_MAX,
-    )
+    @celery.current_app.task(bind=True)
     def send_notification(
         task,
         status_code: int,
@@ -245,3 +236,13 @@ class NotificationViewSetMixin(
     NotificationCreateMixin, NotificationUpdateMixin, NotificationDestroyMixin
 ):
     pass
+
+
+add_autoretry_behaviour(
+    NotificationMixin.send_notification,
+    autoretry_for=(
+        NotificationException,
+        requests.RequestException,
+    ),
+    retry_jitter=False,
+)
