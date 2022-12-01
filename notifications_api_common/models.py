@@ -36,7 +36,7 @@ class NotificationsConfig(SingletonModel):
         default=3,
     )
     notification_delivery_retry_backoff_max = models.PositiveIntegerField(
-        help_text=_("an upper limit to the exponential backoff time."),
+        help_text=_("an upper limit in seconds to the exponential backoff time."),
         default=48,
     )
 

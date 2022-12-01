@@ -30,7 +30,8 @@ class Migration(migrations.Migration):
             model_name="notificationsconfig",
             name="notification_delivery_retry_backoff_max",
             field=models.PositiveIntegerField(
-                default=48, help_text="an upper limit to the exponential backoff time."
+                default=48,
+                help_text="an upper limit in seconds to the exponential backoff time.",
             ),
         ),
     ]

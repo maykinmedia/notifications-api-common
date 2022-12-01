@@ -7,25 +7,18 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
 from django.utils import timezone
 
-import celery
-import requests
 from djangorestframework_camel_case.util import camelize
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.routers import SimpleRouter
-from zds_client import ClientError
 
 from .api.serializers import NotificatieSerializer
 from .kanalen import Kanaal
 from .models import NotificationsConfig
 from .settings import get_setting
-from .task import add_autoretry_behaviour
+from .tasks import send_notification
 from .utils import get_resource_for_path, get_viewset_for_path
 
 logger = logging.getLogger(__name__)
-
-
-class NotificationException(Exception):
-    pass
 
 
 @contextmanager
@@ -169,39 +162,26 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # build the content of the notification
         message = self.construct_message(data, instance=instance)
 
-        self.send_notification.delay(status_code, message)
-
-    @staticmethod
-    @celery.current_app.task(bind=True)
-    def send_notification(
-        task,
-        status_code: int,
-        message: dict,
-    ) -> None:
         # build the client from the singleton config. This will raise an
         # exception if the config is not complete. We want this to hard-fail!
         client = NotificationsConfig.get_client()
         if client is None:
             raise RuntimeError("Could not build a client for Notifications API")
 
-        try:
-            client.create("notificaties", message)
-        # any unexpected errors should show up in error-monitoring, so we only
-        # catch ClientError exceptions
-        except ClientError:
-            extra = {
-                "notification_msg": message,
-                "status_code": status_code,
-            }
-            if task.request.retries >= task.max_retries:
-                extra["final_try"] = True
-            logger.warning(
-                "Could not deliver message to %s",
-                client.base_url,
-                exc_info=True,
-                extra=extra,
-            )
-            raise NotificationException
+        # We've performed all the work that can raise uncaught exceptions that we can
+        # still put inside an atomic transaction block. Next, we schedule the actual
+        # sending block, which allows failures that are logged. Any unexpected errors
+        # here will still cause the transaction to be committed (in the default
+        # behaviour), but the exception will be visible in the error monitoring (such
+        # as Sentry).
+        #
+        # The 'send_notification' task is passed down to the task queue on transaction commit
+
+        def _send():
+            send_notification.delay(message)
+
+        # transaction.on_commit(_send)
+        send_notification.delay(message)
 
 
 class NotificationCreateMixin(NotificationMixin):
@@ -236,13 +216,3 @@ class NotificationViewSetMixin(
     NotificationCreateMixin, NotificationUpdateMixin, NotificationDestroyMixin
 ):
     pass
-
-
-add_autoretry_behaviour(
-    NotificationMixin.send_notification,
-    autoretry_for=(
-        NotificationException,
-        requests.RequestException,
-    ),
-    retry_jitter=False,
-)
