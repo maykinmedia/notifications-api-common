@@ -4,6 +4,7 @@ include notifications_api_common/py.typed
 recursive-include notifications_api_common *.html
 recursive-include notifications_api_common *.txt
 recursive-include notifications_api_common *.po
+recursive-include notifications_api_common *.mo
 global-exclude __pycache__
 global-exclude *.py[co]
 

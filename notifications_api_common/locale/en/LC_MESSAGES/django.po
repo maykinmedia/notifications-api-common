@@ -1,0 +1,183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-12-06 04:45-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: admin.py:27
+#, python-brace-format
+msgid ""
+"Something went wrong while registering subscription for {callback}: "
+"{exception}"
+msgstr ""
+"Something went wrong while registering subscription for {callback}: "
+"{exception}"
+
+#: admin.py:33
+msgid "Register the webhooks"
+msgstr "Register the webhooks"
+
+#: api/serializers.py:10
+msgid "kanaal"
+msgstr "channel"
+
+#: api/serializers.py:13
+msgid ""
+"De naam van het kanaal (`KANAAL.naam`) waar het bericht op moet worden "
+"gepubliceerd."
+msgstr ""
+"The name of the channel (`KANAAL.naam`) where the notification must be published."
+
+#: api/serializers.py:18
+msgid "hoofd object"
+msgstr "main object"
+
+#: api/serializers.py:20
+msgid ""
+"URL-referentie naar het hoofd object van de publicerende API die betrekking "
+"heeft op de `resource`."
+msgstr ""
+"URL reference to the main object of the publishing API related to the `resource`."
+
+#: api/serializers.py:25
+msgid "resource"
+msgstr "resource"
+
+#: api/serializers.py:27
+msgid "De resourcenaam waar de notificatie over gaat."
+msgstr "Name of the resource that the notification is about."
+
+#: api/serializers.py:30
+msgid "resource URL"
+msgstr "resource URL"
+
+#: api/serializers.py:31
+msgid "URL-referentie naar de `resource` van de publicerende API."
+msgstr "URL reference to the `resource` of the publishing API."
+
+#: api/serializers.py:34
+msgid "actie"
+msgstr "action"
+
+#: api/serializers.py:37
+msgid ""
+"De actie die door de publicerende API is gedaan. De publicerende API "
+"specificeert de toegestane acties."
+msgstr ""
+"Action performed by the publishing API. The publishing API determines which action "
+"values are valid."
+
+#: api/serializers.py:42
+msgid "aanmaakdatum"
+msgstr "creation date"
+
+#: api/serializers.py:44
+msgid "Datum en tijd waarop de actie heeft plaatsgevonden."
+msgstr "Timestamp when the action occurred."
+
+#: api/serializers.py:47
+msgid "kenmerken"
+msgstr "properties"
+
+#: api/serializers.py:50
+msgid "kenmerk"
+msgstr "property"
+
+#: api/serializers.py:52
+msgid "Een waarde behorende bij de sleutel."
+msgstr "A value belonging to the key."
+
+#: api/serializers.py:56
+msgid ""
+"Mapping van kenmerken (sleutel/waarde) van de notificatie. De publicerende "
+"API specificeert de toegestane kenmerken."
+msgstr ""
+"Mapping of notification properties (key/value). The publishing API specifies which "
+"properties are allowed/defined."
+
+#: apps.py:7
+msgid "Notifications API integration"
+msgstr "Notifications API integration"
+
+#: models.py:19
+msgid "notifications api service"
+msgstr "notifications api service"
+
+#: models.py:28
+msgid "Notificatiescomponentconfiguratie"
+msgstr "Notifications component configuration"
+
+#: models.py:34
+msgid "no service configured"
+msgstr "no service configured"
+
+#: models.py:36
+#, python-brace-format
+msgid "Notifications API configuration ({api_root})"
+msgstr "Notifications API configuration ({api_root})"
+
+#: models.py:59
+msgid "callback url"
+msgstr "callback url"
+
+#: models.py:59
+msgid "Where to send the notifications (webhook url)"
+msgstr "Where to send the notifications (webhook url)"
+
+#: models.py:62
+msgid "client ID"
+msgstr "client ID"
+
+#: models.py:64
+msgid "Client ID to construct the auth token"
+msgstr "Client ID to construct the auth token"
+
+#: models.py:67
+msgid "client secret"
+msgstr "client secret"
+
+#: models.py:69
+msgid "Secret to construct the auth token"
+msgstr "Secret to construct the auth token"
+
+#: models.py:73
+msgid "channels"
+msgstr "channels"
+
+#: models.py:74
+msgid "Comma-separated list of channels to subscribe to"
+msgstr "Comma-separated list of channels to subscribe to"
+
+#: models.py:78
+msgid "NC subscription"
+msgstr "Notifications API subscription"
+
+#: models.py:81
+msgid "Subscription as it is known in the NC"
+msgstr "Subscription as it is known in the Notifications API"
+
+#: models.py:85
+msgid "Webhook subscription"
+msgstr "Webhook subscription"
+
+#: models.py:86
+msgid "Webhook subscriptions"
+msgstr "Webhook subscriptions"
+
+#: validators.py:19
+msgid "Ensure this value is not in the future."
+msgstr "Ensure this value is not in the future."
