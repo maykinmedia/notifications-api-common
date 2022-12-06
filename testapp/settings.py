@@ -61,4 +61,4 @@ TEMPLATES = [
 
 ROOT_URLCONF = "testapp.urls"
 
-ZGW_CONSUMERS_CLIENT_CLASS = "zds_client.Client"
+ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
