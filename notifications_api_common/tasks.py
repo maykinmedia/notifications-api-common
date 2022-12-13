@@ -1,36 +1,20 @@
 import logging
 
-import celery
 import requests
+from celery import shared_task
 from zds_client import ClientError
 
+from .autoretry import add_autoretry_behaviour
 from .models import NotificationsConfig
 
 logger = logging.getLogger(__name__)
-
-
-class ConfigTask(celery.Task):
-    """
-    add retry options from NotificationsConfig into the task instance
-    """
-
-    def __init__(self):
-        config = NotificationsConfig.get_solo()
-
-        self.max_retries = config.notification_delivery_max_retries
-        self.retry_backoff = config.notification_delivery_retry_backoff
-        self.retry_backoff_max = config.notification_delivery_retry_backoff_max
 
 
 class NotificationException(Exception):
     pass
 
 
-@celery.current_app.task(
-    bind=True,
-    autoretry_for=(NotificationException, requests.RequestException),
-    base=ConfigTask,
-)
+@shared_task(bind=True)
 def send_notification(self, message: dict) -> None:
     """
     send message to Notification API
@@ -49,7 +33,7 @@ def send_notification(self, message: dict) -> None:
     except ClientError as exc:
         logger.warning(
             "Could not deliver message to %s",
-            client.base_url,
+            client.api_root,
             exc_info=exc,
             extra={
                 "notification_msg": message,
@@ -59,3 +43,13 @@ def send_notification(self, message: dict) -> None:
         )
 
         raise NotificationException from exc
+
+
+add_autoretry_behaviour(
+    send_notification,
+    autoretry_for=(
+        NotificationException,
+        requests.RequestException,
+    ),
+    retry_jitter=False,
+)

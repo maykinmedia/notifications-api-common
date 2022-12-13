@@ -180,8 +180,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         def _send():
             send_notification.delay(message)
 
-        # transaction.on_commit(_send)
-        send_notification.delay(message)
+        transaction.on_commit(_send)
 
 
 class NotificationCreateMixin(NotificationMixin):
