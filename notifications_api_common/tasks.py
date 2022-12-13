@@ -50,7 +50,7 @@ def send_notification(self, message: dict) -> None:
         logger.warning(
             "Could not deliver message to %s",
             client.base_url,
-            exc_info=True,
+            exc_info=exc,
             extra={
                 "notification_msg": message,
                 "current_try": self.request.retries + 1,
