@@ -10,12 +10,12 @@ from django.utils import timezone
 from djangorestframework_camel_case.util import camelize
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.routers import SimpleRouter
-from zds_client import ClientError
 
 from .api.serializers import NotificatieSerializer
 from .kanalen import Kanaal
 from .models import NotificationsConfig
 from .settings import get_setting
+from .tasks import send_notification
 from .utils import get_resource_for_path, get_viewset_for_path
 
 logger = logging.getLogger(__name__)
@@ -171,37 +171,16 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # We've performed all the work that can raise uncaught exceptions that we can
         # still put inside an atomic transaction block. Next, we schedule the actual
         # sending block, which allows failures that are logged. Any unexpected errors
-        # here will still cause the transaction to be comitted (in the default
+        # here will still cause the transaction to be committed (in the default
         # behaviour), but the exception will be visible in the error monitoring (such
         # as Sentry).
         #
-        # The _send function is passed down to the scheduler, which is by default to
-        # execute it on transaction commit.
+        # The 'send_notification' task is passed down to the task queue on transaction commit
 
         def _send():
-            try:
-                client.create("notificaties", message)
-            # any unexpected errors should show up in error-monitoring, so we only
-            # catch ClientError exceptions
-            except ClientError:
-                logger.warning(
-                    "Could not deliver message to %s",
-                    client.base_url,
-                    exc_info=True,
-                    extra={
-                        "notification_msg": message,
-                        "status_code": status_code,
-                    },
-                )
+            send_notification.delay(message)
 
-        self.schedule_notification(_send)
-
-    @staticmethod
-    def schedule_notification(send_function: callable):
-        """
-        Ensure that a notification is scheduled to be sent.
-        """
-        transaction.on_commit(send_function)
+        transaction.on_commit(_send)
 
 
 class NotificationCreateMixin(NotificationMixin):

@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 from zds_client import Client, ClientAuth
 from zgw_consumers.constants import APITypes
-from zgw_consumers.service import Service
+from zgw_consumers.models import Service
 
 from .query import NotificationsConfigManager
 
@@ -20,6 +20,24 @@ class NotificationsConfig(SingletonModel):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+    )
+    notification_delivery_max_retries = models.PositiveIntegerField(
+        help_text=_(
+            "The maximum number of automatic retries. After this amount of retries, "
+            "guaranteed delivery stops trying to deliver the message."
+        ),
+        default=5,
+    )
+    notification_delivery_retry_backoff = models.PositiveIntegerField(
+        help_text=_(
+            "If specified, a factor applied to the exponential backoff. "
+            "This allows you to tune how quickly automatic retries are performed."
+        ),
+        default=3,
+    )
+    notification_delivery_retry_backoff_max = models.PositiveIntegerField(
+        help_text=_("An upper limit in seconds to the exponential backoff time."),
+        default=48,
     )
 
     objects = NotificationsConfigManager()
