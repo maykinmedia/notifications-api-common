@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-06 04:45-0600\n"
+"POT-Creation-Date: 2022-12-14 13:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,7 +40,8 @@ msgid ""
 "De naam van het kanaal (`KANAAL.naam`) waar het bericht op moet worden "
 "gepubliceerd."
 msgstr ""
-"The name of the channel (`KANAAL.naam`) where the notification must be published."
+"The name of the channel (`KANAAL.naam`) where the notification must be "
+"published."
 
 #: api/serializers.py:18
 msgid "hoofd object"
@@ -51,7 +52,8 @@ msgid ""
 "URL-referentie naar het hoofd object van de publicerende API die betrekking "
 "heeft op de `resource`."
 msgstr ""
-"URL reference to the main object of the publishing API related to the `resource`."
+"URL reference to the main object of the publishing API related to the "
+"`resource`."
 
 #: api/serializers.py:25
 msgid "resource"
@@ -78,8 +80,8 @@ msgid ""
 "De actie die door de publicerende API is gedaan. De publicerende API "
 "specificeert de toegestane acties."
 msgstr ""
-"Action performed by the publishing API. The publishing API determines which action "
-"values are valid."
+"Action performed by the publishing API. The publishing API determines which "
+"action values are valid."
 
 #: api/serializers.py:42
 msgid "aanmaakdatum"
@@ -106,8 +108,8 @@ msgid ""
 "Mapping van kenmerken (sleutel/waarde) van de notificatie. De publicerende "
 "API specificeert de toegestane kenmerken."
 msgstr ""
-"Mapping of notification properties (key/value). The publishing API specifies which "
-"properties are allowed/defined."
+"Mapping of notification properties (key/value). The publishing API specifies "
+"which properties are allowed/defined."
 
 #: apps.py:7
 msgid "Notifications API integration"
@@ -117,64 +119,84 @@ msgstr "Notifications API integration"
 msgid "notifications api service"
 msgstr "notifications api service"
 
-#: models.py:28
+#: models.py:26
+msgid ""
+"The maximum number of automatic retries. After this amount of retries, "
+"guaranteed delivery stops trying to deliver the message."
+msgstr ""
+"The maximum number of automatic retries. After this amount of retries, "
+"guaranteed delivery stops trying to deliver the message."
+
+#: models.py:33
+msgid ""
+"If specified, a factor applied to the exponential backoff. This allows you "
+"to tune how quickly automatic retries are performed."
+msgstr ""
+"If specified, a factor applied to the exponential backoff. This allows you "
+"to tune how quickly automatic retries are performed."
+
+#: models.py:39
+msgid "An upper limit in seconds to the exponential backoff time."
+msgstr "An upper limit in seconds to the exponential backoff time."
+
+#: models.py:46
 msgid "Notificatiescomponentconfiguratie"
 msgstr "Notifications component configuration"
 
-#: models.py:34
+#: models.py:52
 msgid "no service configured"
 msgstr "no service configured"
 
-#: models.py:36
+#: models.py:54
 #, python-brace-format
 msgid "Notifications API configuration ({api_root})"
 msgstr "Notifications API configuration ({api_root})"
 
-#: models.py:59
+#: models.py:77
 msgid "callback url"
 msgstr "callback url"
 
-#: models.py:59
+#: models.py:77
 msgid "Where to send the notifications (webhook url)"
 msgstr "Where to send the notifications (webhook url)"
 
-#: models.py:62
+#: models.py:80
 msgid "client ID"
 msgstr "client ID"
 
-#: models.py:64
+#: models.py:82
 msgid "Client ID to construct the auth token"
 msgstr "Client ID to construct the auth token"
 
-#: models.py:67
+#: models.py:85
 msgid "client secret"
 msgstr "client secret"
 
-#: models.py:69
+#: models.py:87
 msgid "Secret to construct the auth token"
 msgstr "Secret to construct the auth token"
 
-#: models.py:73
+#: models.py:91
 msgid "channels"
 msgstr "channels"
 
-#: models.py:74
+#: models.py:92
 msgid "Comma-separated list of channels to subscribe to"
 msgstr "Comma-separated list of channels to subscribe to"
 
-#: models.py:78
+#: models.py:96
 msgid "NC subscription"
 msgstr "Notifications API subscription"
 
-#: models.py:81
+#: models.py:99
 msgid "Subscription as it is known in the NC"
 msgstr "Subscription as it is known in the Notifications API"
 
-#: models.py:85
+#: models.py:103
 msgid "Webhook subscription"
 msgstr "Webhook subscription"
 
-#: models.py:86
+#: models.py:104
 msgid "Webhook subscriptions"
 msgstr "Webhook subscriptions"
 
