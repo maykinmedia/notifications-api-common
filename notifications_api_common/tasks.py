@@ -30,7 +30,7 @@ def send_notification(self, message: dict) -> None:
         client.create("notificaties", message)
     # any unexpected errors should show up in error-monitoring, so we only
     # catch ClientError exceptions
-    except ClientError as exc:
+    except (ClientError, requests.HTTPError) as exc:
         logger.warning(
             "Could not deliver message to %s",
             client.api_root,

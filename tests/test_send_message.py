@@ -67,8 +67,6 @@ def test_task_send_notification_success(notifications_config, requests_mock, set
 def test_task_send_notification_with_retry(
     notifications_config, requests_mock, settings
 ):
-    from notifications_api_common.tasks import send_notification
-
     msg = {"foo": "bar"}
 
     # add NRC mocks
@@ -84,3 +82,37 @@ def test_task_send_notification_with_retry(
             send_notification(msg)
 
     mock_retry.assert_called_with(exc=exc, countdown=3)
+
+
+@pytest.mark.django_db()
+def test_task_send_notification_catch_404(
+    notifications_config, requests_mock, settings
+):
+    """
+    test that 404 error will raise NotificationException,
+    which can be handled by the lib users
+    """
+    # add NRC mocks
+    settings.ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [TESTS_DIR / "schemas"]
+    mock_service_oas_get(requests_mock, NOTIFICATIONS_API_ROOT, "nrc")
+    requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", status_code=404)
+
+    with pytest.raises(NotificationException):
+        send_notification({"foo": "bar"})
+
+
+@pytest.mark.django_db()
+def test_task_send_notification_catch_500(
+    notifications_config, requests_mock, settings
+):
+    """
+    test that 500 error will raise NotificationException,
+    which can be handled by the lib users
+    """
+    # add NRC mocks
+    settings.ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [TESTS_DIR / "schemas"]
+    mock_service_oas_get(requests_mock, NOTIFICATIONS_API_ROOT, "nrc")
+    requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", status_code=500)
+
+    with pytest.raises(NotificationException):
+        send_notification({"foo": "bar"})
