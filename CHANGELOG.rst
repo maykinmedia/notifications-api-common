@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.2.1 (2023-02-07)
+------------------
+
+Fixed automatic retry for assured delivery introduced in 0.2.0
+
+* After automatic retries are exhausted failed notifications with 50x HTTP statuses
+  will be shown in the admin interface.
+
 0.2.0 (2022-12-14)
 ------------------
 
