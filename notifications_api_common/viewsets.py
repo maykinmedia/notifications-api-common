@@ -47,7 +47,6 @@ class NotificationMixinBase(type):
         router = SimpleRouter()
         for route in router.get_routes(new_cls):
             for method, action in route.mapping.items():
-
                 if method.upper() in SAFE_METHODS:
                     continue
 
