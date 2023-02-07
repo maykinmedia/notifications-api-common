@@ -29,7 +29,6 @@ def migrate_notifications_config_backwards(apps, _):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         (
             "notifications_api_common",
