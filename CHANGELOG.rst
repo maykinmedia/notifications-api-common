@@ -2,6 +2,11 @@
 Changelog
 =========
 
+0.2.2 (2023-04-20)
+------------------
+
+Fixed a crash in migrations during fresh installs when using the latest zgw-consumers.
+
 0.2.1 (2023-02-07)
 ------------------
 
