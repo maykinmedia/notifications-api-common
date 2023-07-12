@@ -32,6 +32,7 @@ Requirements
 * Python 3.7 or above
 * setuptools 30.3.0 or above
 * Django 3.2 or newer
+* Celery setup with one worker deployed
 
 
 Install
