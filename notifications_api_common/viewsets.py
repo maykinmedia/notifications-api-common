@@ -165,7 +165,8 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # exception if the config is not complete. We want this to hard-fail!
         client = NotificationsConfig.get_client()
         if client is None:
-            raise RuntimeError("Could not build a client for Notifications API")
+            logger.info("Not notifying, Notifications API has not been configured.")
+            return
 
         # We've performed all the work that can raise uncaught exceptions that we can
         # still put inside an atomic transaction block. Next, we schedule the actual
