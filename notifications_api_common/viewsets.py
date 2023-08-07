@@ -161,8 +161,9 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # build the content of the notification
         message = self.construct_message(data, instance=instance)
 
-        # build the client from the singleton config. This will raise an
-        # exception if the config is not complete. We want this to hard-fail!
+        # build the client from the singleton config.
+        # This will raise an exception if the config is not complete unless
+        # NOTIFICATIONS_GUARANTEE_DELIVERY is explicitly set to False
         client = NotificationsConfig.get_client()
         if client is None:
             msg = "Not notifying, Notifications API configuration is broken or absent."
