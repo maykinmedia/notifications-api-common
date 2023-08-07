@@ -1,6 +1,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from django.test import override_settings
 from django.urls import reverse
 
 import pytest
@@ -116,3 +117,36 @@ def test_task_send_notification_catch_500(
 
     with pytest.raises(NotificationException):
         send_notification({"foo": "bar"})
+
+
+@freeze_time("2022-01-01")
+@pytest.mark.django_db(transaction=True)
+def test_api_create_person_unconfigured(api_client, notifications_config):
+    """Test the default behavior of NOTIFICATIONS_GUARANTEE_DELIVERY=True"""
+    notifications_config.delete()
+    url = reverse("person-list")
+    data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
+
+    with patch(
+        "notifications_api_common.viewsets.send_notification.delay"
+    ) as mock_task:
+        with pytest.raises(RuntimeError):
+            response = api_client.post(url, data)
+
+    assert Person.objects.count() == 0
+
+
+@freeze_time("2022-01-01")
+@pytest.mark.django_db(transaction=True)
+@override_settings(NOTIFICATIONS_GUARANTEE_DELIVERY=False)
+def test_api_create_person_unconfigured(api_client, notifications_config):
+    notifications_config.delete()
+    url = reverse("person-list")
+    data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
+
+    with patch(
+        "notifications_api_common.viewsets.send_notification.delay"
+    ) as mock_task:
+        response = api_client.post(url, data)
+
+    assert Person.objects.count() == 1
