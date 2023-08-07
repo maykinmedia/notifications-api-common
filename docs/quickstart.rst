@@ -11,6 +11,7 @@ Pre-requisites
 * Python 3.7 or higher
 * Setuptools 30.3.0 or higher
 * Only the PostgreSQL database is supported
+* Working Celery 5.0 or higher setup and deploy at least one worker
 
 Install from PyPI
 -----------------
