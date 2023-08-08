@@ -144,9 +144,6 @@ def test_api_create_person_unconfigured(api_client, notifications_config):
     url = reverse("person-list")
     data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
 
-    with patch(
-        "notifications_api_common.viewsets.send_notification.delay"
-    ) as mock_task:
-        response = api_client.post(url, data)
+    response = api_client.post(url, data)
 
     assert Person.objects.count() == 1
