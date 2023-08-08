@@ -47,6 +47,8 @@ Three additional settings are available:
 
 * ``NOTIFICATIONS_DISABLED``: a boolean, default ``False``. Set to ``True`` to
   completely disable the sending of notifications.
+* ``NOTIFICATIONS_GUARANTEE_DELIVERY``: a boolean, default ``True``. Set to ``False`` to
+  not raise a RuntimeError when the Notifications API is unconfigured.
 * ``IS_HTTPS``: a boolean, default ``True``. Set to ``False`` to indicate that
   no HTTPS is being used.
 

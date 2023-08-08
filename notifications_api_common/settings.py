@@ -7,6 +7,8 @@ NOTIFICATIONS_DISABLED = False
 
 IS_HTTPS = True
 
+NOTIFICATIONS_GUARANTEE_DELIVERY = True
+
 
 def get_setting(name: str) -> Any:
     this_module = sys.modules[__name__]
