@@ -3,17 +3,20 @@ Provide notifications kanaal/exchange classes.
 """
 
 from collections import defaultdict
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
-from django.db.models import Model
-from django.db.models.base import ModelBase
+from django.db.models import Field, Model
+
+from rest_framework.request import Request
 
 KANAAL_REGISTRY = set()
 
 
 class Kanaal:
-    def __init__(self, label: str, main_resource: ModelBase, kenmerken: Tuple = None):
+    def __init__(
+        self, label: str, main_resource: Model, kenmerken: Union[Tuple, None] = None
+    ):
         self.label = label
         self.main_resource = main_resource
 
@@ -23,7 +26,7 @@ class Kanaal:
         self.kenmerken = kenmerken or ()
         for kenmerk in self.kenmerken:
             try:
-                self.main_resource._meta.get_field(kenmerk)
+                self._get_field(self.main_resource, kenmerk)
             except FieldDoesNotExist as exc:
                 raise ImproperlyConfigured(
                     f"Kenmerk '{kenmerk}' does not exist on the model {main_resource}"
@@ -39,7 +42,18 @@ class Kanaal:
             self.main_resource,
         )
 
-    def get_kenmerken(self, obj: Model, data: Dict = None) -> Dict:
+    def _get_field(self, model: Model, field: str) -> Field:
+        """
+        Function to retrieve a field from a Model
+        """
+        return model._meta.get_field(field)
+
+    def get_kenmerken(
+        self,
+        obj: Model,
+        data: Union[Dict, None] = None,
+        request: Union[Request, None] = None,  # noqa
+    ) -> Dict:
         data = data or {}
         return {
             kenmerk: data.get(kenmerk, getattr(obj, kenmerk))
@@ -55,7 +69,7 @@ class Kanaal:
         kenmerken = [
             kenmerk_template.format(
                 kenmerk=kenmerk,
-                help_text=self.main_resource._meta.get_field(kenmerk).help_text,
+                help_text=self._get_field(self.main_resource, kenmerk).help_text,
             )
             for kenmerk in self.kenmerken
         ]
