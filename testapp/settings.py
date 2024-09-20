@@ -2,6 +2,8 @@ import os
 
 DEBUG = True
 
+USE_TZ = False
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 SECRET_KEY = "so-secret-i-cant-believe-you-are-looking-at-this"
@@ -63,4 +65,4 @@ TEMPLATES = [
 
 ROOT_URLCONF = "testapp.urls"
 
-ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
+ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.legacy.client.ZGWClient"
