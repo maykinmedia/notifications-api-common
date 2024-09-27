@@ -3,7 +3,6 @@ from django.utils.translation import gettext_lazy as _
 
 from requests.exceptions import RequestException
 from solo.admin import SingletonModelAdmin
-from zds_client.client import ClientError
 
 from .models import NotificationsConfig, Subscription
 
@@ -20,7 +19,7 @@ def register_webhook(modeladmin, request, queryset):
 
         try:
             sub.register()
-        except (ClientError, RequestException) as e:
+        except RequestException as e:
             messages.error(
                 request,
                 _(

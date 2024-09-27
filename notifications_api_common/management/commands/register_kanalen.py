@@ -21,10 +21,12 @@ def create_kanaal(kanaal: str) -> None:
     """
     client = NotificationsConfig.get_client()
 
+    assert client
+
     # look up the exchange in the registry
     _kanaal = next(k for k in KANAAL_REGISTRY if k.label == kanaal)
 
-    kanalen = client.list("kanaal", query_params={"naam": kanaal})
+    kanalen = client.get("kanaal", params={"naam": kanaal})
     if kanalen:
         raise KanaalExists()
 
@@ -35,9 +37,9 @@ def create_kanaal(kanaal: str) -> None:
         f"{protocol}://{domain}{reverse('notifications:kanalen')}#{kanaal}"
     )
 
-    client.create(
+    client.post(
         "kanaal",
-        {
+        json={
             "naam": kanaal,
             "documentatieLink": documentation_url,
             "filters": list(_kanaal.kenmerken),
