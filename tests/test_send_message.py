@@ -7,12 +7,12 @@ from django.urls import reverse
 import pytest
 from celery.exceptions import Retry
 from freezegun import freeze_time
-from zgw_consumers.test import mock_service_oas_get
 
 from notifications_api_common.tasks import NotificationException, send_notification
 from testapp.models import Person
 
-NOTIFICATIONS_API_ROOT = "http://some-api-root/api/v1/"
+from .conftest import NOTIFICATIONS_API_ROOT
+
 TESTS_DIR = Path(__file__).parent
 
 
@@ -52,8 +52,6 @@ def test_api_create_person(api_client, notifications_config):
 def test_task_send_notification_success(notifications_config, requests_mock, settings):
     msg = {"foo": "bar"}
     # add mocks
-    settings.ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [TESTS_DIR / "schemas"]
-    mock_service_oas_get(requests_mock, NOTIFICATIONS_API_ROOT, "nrc")
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", status_code=201)
 
     send_notification(msg)
@@ -71,8 +69,6 @@ def test_task_send_notification_with_retry(
     msg = {"foo": "bar"}
 
     # add NRC mocks
-    settings.ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [TESTS_DIR / "schemas"]
-    mock_service_oas_get(requests_mock, NOTIFICATIONS_API_ROOT, "nrc")
     exc = NotificationException()
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", exc=exc)
 
@@ -94,8 +90,6 @@ def test_task_send_notification_catch_404(
     which can be handled by the lib users
     """
     # add NRC mocks
-    settings.ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [TESTS_DIR / "schemas"]
-    mock_service_oas_get(requests_mock, NOTIFICATIONS_API_ROOT, "nrc")
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", status_code=404)
 
     with pytest.raises(NotificationException):
@@ -111,8 +105,6 @@ def test_task_send_notification_catch_500(
     which can be handled by the lib users
     """
     # add NRC mocks
-    settings.ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [TESTS_DIR / "schemas"]
-    mock_service_oas_get(requests_mock, NOTIFICATIONS_API_ROOT, "nrc")
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", status_code=500)
 
     with pytest.raises(NotificationException):
@@ -136,7 +128,9 @@ def test_api_create_person_unconfigured(api_client, notifications_config):
 @freeze_time("2022-01-01")
 @pytest.mark.django_db(transaction=True)
 @override_settings(NOTIFICATIONS_GUARANTEE_DELIVERY=False)
-def test_api_create_person_unconfigured(api_client, notifications_config):
+def test_api_create_person_unconfigured_notifications_guarantee_delivery_false(
+    api_client, notifications_config
+):
     notifications_config.delete()
     url = reverse("person-list")
     data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
