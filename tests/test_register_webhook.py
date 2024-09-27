@@ -4,29 +4,17 @@ from django.contrib.messages import get_messages
 from django.utils.translation import gettext as _
 
 import pytest
-from requests import Response
+import requests_mock
 from requests.exceptions import HTTPError, RequestException
 
 from notifications_api_common.admin import register_webhook
 from notifications_api_common.models import Subscription
 
-
-class MockResponse:
-    def __init__(self, data):
-        self.data = data
-
-    def json(self):
-        return self.data
+from .conftest import NOTIFICATIONS_API_ROOT
 
 
-@patch(
-    "ape_pie.APIClient.post",
-    return_value=MockResponse({"url": "https://example.com/api/v1/abonnementen/1"}),
-)
 @pytest.mark.django_db
-def test_register_webhook_success(
-    request_with_middleware, notifications_config, *mocks
-):
+def test_register_webhook_success(request_with_middleware, notifications_config):
     subscription = Subscription.objects.create(
         callback_url="https://example.com/callback",
         client_id="client_id",
@@ -34,7 +22,12 @@ def test_register_webhook_success(
         channels=["zaken"],
     )
 
-    register_webhook(object, request_with_middleware, Subscription.objects.all())
+    with requests_mock.Mocker() as m:
+        m.post(
+            f"{NOTIFICATIONS_API_ROOT}abonnement",
+            json={"url": "https://example.com/api/v1/abonnementen/1"},
+        )
+        register_webhook(object, request_with_middleware, Subscription.objects.all())
 
     messages = list(get_messages(request_with_middleware))
 
@@ -55,7 +48,7 @@ def test_register_webhook_request_exception(
         channels=["zaken"],
     )
 
-    with patch("ape_pie.APIClient.post", side_effect=RequestException("exception")):
+    with patch("requests.Session.post", side_effect=RequestException("exception")):
         register_webhook(object, request_with_middleware, Subscription.objects.all())
 
     messages = list(get_messages(request_with_middleware))
@@ -75,7 +68,7 @@ def test_register_webhook_http_error(request_with_middleware, notifications_conf
         channels=["zaken"],
     )
 
-    with patch("ape_pie.APIClient.post", side_effect=HTTPError("400")):
+    with patch("requests.Session.post", side_effect=HTTPError("400")):
         register_webhook(object, request_with_middleware, Subscription.objects.all())
 
     messages = list(get_messages(request_with_middleware))

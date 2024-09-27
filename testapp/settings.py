@@ -2,6 +2,8 @@ import os
 
 DEBUG = True
 
+SITE_ID = 1
+
 USE_TZ = False
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -28,6 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "solo",
     "simple_certmanager",
     "zgw_consumers",
