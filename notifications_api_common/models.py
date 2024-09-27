@@ -4,8 +4,9 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from ape_pie.client import APIClient
 from solo.models import SingletonModel
-from zds_client import Client, ClientAuth
+from zgw_consumers.client import ZGWAuth, build_client
 from zgw_consumers.constants import APITypes
 from zgw_consumers.models import Service
 
@@ -56,13 +57,15 @@ class NotificationsConfig(SingletonModel):
         )
 
     @classmethod
-    def get_client(cls) -> Optional[Client]:
+    def get_client(cls) -> Optional[APIClient]:
         """
         Construct a client, prepared with the required auth.
         """
         config = cls.get_solo()
         if config.notifications_api_service:
-            return config.notifications_api_service.build_client()
+            return build_client(
+                config.notifications_api_service, client_factory=APIClient
+            )
         return None
 
 
@@ -110,23 +113,20 @@ class Subscription(models.Model):
         """
         Registers the webhook with the notification component.
         """
-        assert (
-            NotificationsConfig.get_solo().notifications_api_service
-        ), "No service for Notifications API configured"
+        service = NotificationsConfig.get_solo().notifications_api_service
+        assert service, "No service for Notifications API configured"
 
         client = NotificationsConfig.get_client()
+        assert client
 
         # This authentication is for the NC to call us. Thus, it's *not* for
         # calling the NC to create a subscription.
         # TODO should be replaced with `TokenAuth`
         # see: maykinmedia/notifications-api-common/pull/1#discussion_r941450384
-        self_auth = ClientAuth(
-            client_id=self.client_id,
-            secret=self.secret,
-        )
+        self_auth = ZGWAuth(service)
         data = {
             "callbackUrl": self.callback_url,
-            "auth": self_auth.credentials()["Authorization"],
+            "auth": f"Bearer {self_auth._token}",
             "kanalen": [
                 {
                     "naam": channel,
@@ -138,7 +138,7 @@ class Subscription(models.Model):
         }
 
         # register the subscriber
-        subscriber = client.create("abonnement", data=data)
+        subscriber = client.post("abonnement", json=data).json()
 
         self._subscription = subscriber["url"]
         self.save(update_fields=["_subscription"])
