@@ -26,7 +26,7 @@ def create_kanaal(kanaal: str) -> None:
     # look up the exchange in the registry
     _kanaal = next(k for k in KANAAL_REGISTRY if k.label == kanaal)
 
-    kanalen = client.get("kanaal", params={"naam": kanaal})
+    kanalen = client.get("kanaal", params={"naam": kanaal}).json()
     if kanalen:
         raise KanaalExists()
 
