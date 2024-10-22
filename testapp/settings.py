@@ -64,5 +64,3 @@ TEMPLATES = [
 ]
 
 ROOT_URLCONF = "testapp.urls"
-
-ZGW_CONSUMERS_CLIENT_CLASS = "ape_pie.APIClient"
