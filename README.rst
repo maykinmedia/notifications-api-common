@@ -31,7 +31,7 @@ Requirements
 
 * Python 3.10 or above
 * setuptools 30.3.0 or above
-* Django 4.1 or newer
+* Django 4.2 or newer
 * Celery 5.0 or newer setup with one worker deployed
 
 
