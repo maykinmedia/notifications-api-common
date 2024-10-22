@@ -50,7 +50,6 @@ def test_api_create_person(api_client, notifications_config):
 @pytest.mark.django_db()
 def test_task_send_notification_success(notifications_config, requests_mock, settings):
     msg = {"foo": "bar"}
-    # add mocks
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", status_code=201)
 
     send_notification(msg)
@@ -66,8 +65,6 @@ def test_task_send_notification_with_retry(
     notifications_config, requests_mock, settings
 ):
     msg = {"foo": "bar"}
-
-    # add NRC mocks
     exc = NotificationException()
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", exc=exc)
 
