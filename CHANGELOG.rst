@@ -2,6 +2,20 @@
 Changelog
 =========
 
+0.3.0 (2024-10-24)
+------------------
+
+* Upgraded Django requirement  to >= 4.2
+* Upgraded minimum python requirement to >= 3.10
+* Added python 3.12 support
+* Added the `NOTIFICATIONS_GUARANTEE_DELIVERY` environment variable which allows
+  `RuntimeError`s to be raised (or not to) whenever no Notifications API is
+  configured. The default for this setting is set to `True`.
+* Upgraded zgw-consumers to 0.35.1
+  * This removed support for retrieving external OAS files to determine
+  * This requires `zgw_consumers.models.Service` ("service") instances to be
+    created to do external API calls through `zgw_consumer`
+
 0.2.2 (2023-04-20)
 ------------------
 
