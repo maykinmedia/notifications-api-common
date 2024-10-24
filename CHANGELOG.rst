@@ -13,7 +13,8 @@ Changelog
   configured. The default for this setting is set to `True`.
 * Upgraded zgw-consumers to 0.35.1
   * This removed support for retrieving external OAS files to determine
-    possible API calls
+  * This requires `zgw_consumers.models.Service` ("service") instances to be
+    created to do external API calls through `zgw_consumer`
 
 0.2.2 (2023-04-20)
 ------------------
