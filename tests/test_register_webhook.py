@@ -4,16 +4,24 @@ from django.contrib.messages import get_messages
 from django.utils.translation import gettext as _
 
 import pytest
-from requests.exceptions import RequestException
-from zds_client.client import ClientError
+from requests import Response
+from requests.exceptions import HTTPError, RequestException
 
 from notifications_api_common.admin import register_webhook
 from notifications_api_common.models import Subscription
 
 
+class MockResponse:
+    def __init__(self, data):
+        self.data = data
+
+    def json(self):
+        return self.data
+
+
 @patch(
-    "zds_client.client.Client.create",
-    return_value={"url": "https://example.com/api/v1/abonnementen/1"},
+    "ape_pie.APIClient.post",
+    return_value=MockResponse({"url": "https://example.com/api/v1/abonnementen/1"}),
 )
 @pytest.mark.django_db
 def test_register_webhook_success(
@@ -47,9 +55,7 @@ def test_register_webhook_request_exception(
         channels=["zaken"],
     )
 
-    with patch(
-        "zds_client.client.Client.create", side_effect=RequestException("exception")
-    ):
+    with patch("ape_pie.APIClient.post", side_effect=RequestException("exception")):
         register_webhook(object, request_with_middleware, Subscription.objects.all())
 
     messages = list(get_messages(request_with_middleware))
@@ -61,7 +67,7 @@ def test_register_webhook_request_exception(
 
 
 @pytest.mark.django_db
-def test_register_webhook_client_error(request_with_middleware, notifications_config):
+def test_register_webhook_http_error(request_with_middleware, notifications_config):
     Subscription.objects.create(
         callback_url="https://example.com/callback",
         client_id="client_id",
@@ -69,7 +75,7 @@ def test_register_webhook_client_error(request_with_middleware, notifications_co
         channels=["zaken"],
     )
 
-    with patch("zds_client.client.Client.create", side_effect=ClientError("exception")):
+    with patch("ape_pie.APIClient.post", side_effect=HTTPError("400")):
         register_webhook(object, request_with_middleware, Subscription.objects.all())
 
     messages = list(get_messages(request_with_middleware))
@@ -77,4 +83,4 @@ def test_register_webhook_client_error(request_with_middleware, notifications_co
     assert len(messages) == 1
     assert messages[0].message == _(
         "Something went wrong while registering subscription for {callback_url}: {e}"
-    ).format(callback_url="https://example.com/callback", e="exception")
+    ).format(callback_url="https://example.com/callback", e="400")

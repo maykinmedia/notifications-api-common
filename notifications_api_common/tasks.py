@@ -2,7 +2,6 @@ import logging
 
 import requests
 from celery import shared_task
-from zds_client import ClientError
 
 from .autoretry import add_autoretry_behaviour
 from .models import NotificationsConfig
@@ -27,13 +26,14 @@ def send_notification(self, message: dict) -> None:
         return
 
     try:
-        client.create("notificaties", message)
+        response = client.post("notificaties", json=message)
+        response.raise_for_status()
     # any unexpected errors should show up in error-monitoring, so we only
-    # catch ClientError exceptions
-    except (ClientError, requests.HTTPError) as exc:
+    # catch HTTPError exceptions
+    except requests.HTTPError as exc:
         logger.warning(
             "Could not deliver message to %s",
-            client.api_root,
+            client.base_url,
             exc_info=exc,
             extra={
                 "notification_msg": message,

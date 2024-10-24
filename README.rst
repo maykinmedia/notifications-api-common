@@ -4,7 +4,7 @@ notifications-api-common
 :Version: 0.2.2
 :Source: https://github.com/maykinmedia/notifications-api-common
 :Keywords: notifications, REST, API, Common Ground, ZGW
-:PythonVersion: 3.9
+:PythonVersion: 3.10
 
 |build-status| |code-quality| |black| |coverage| |docs|
 
@@ -29,9 +29,9 @@ Installation
 Requirements
 ------------
 
-* Python 3.8 or above
+* Python 3.10 or above
 * setuptools 30.3.0 or above
-* Django 3.2 or newer
+* Django 4.2 or newer
 * Celery 5.0 or newer setup with one worker deployed
 
 
