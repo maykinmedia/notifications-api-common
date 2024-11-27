@@ -134,8 +134,6 @@ class Command(BaseCommand):
                     f"Registered kanaal '{kanaal}' with {service.api_root}"
                 )
             except (
-                KanaalRequestException,
-                KanaalCreateException,
-                KanaalExistsException,
+                KanaalException,
             ) as exception:
                 self.stderr.write(f"{str(exception)} . Skipping..")
