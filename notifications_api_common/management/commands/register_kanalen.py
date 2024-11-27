@@ -133,7 +133,5 @@ class Command(BaseCommand):
                 self.stdout.write(
                     f"Registered kanaal '{kanaal}' with {service.api_root}"
                 )
-            except (
-                KanaalException,
-            ) as exception:
+            except (KanaalException,) as exception:
                 self.stderr.write(f"{str(exception)} . Skipping..")
