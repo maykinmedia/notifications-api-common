@@ -4,6 +4,9 @@ from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 
+from requests import Response
+from requests.exceptions import JSONDecodeError, RequestException
+
 from ...kanalen import KANAAL_REGISTRY
 from ...models import NotificationsConfig
 from ...settings import get_setting
@@ -13,6 +16,27 @@ logger = logging.getLogger(__name__)
 
 class KanaalExists(Exception):
     pass
+
+
+class KanaalException(Exception):
+    kanaal: str
+    data: dict | list
+
+    def __init__(self, kanaal: str, data: dict | list = {}):
+        super().__init__()
+
+        self.kanaal = kanaal
+        self.data = data
+
+
+class KanaalRequestException(KanaalException):
+    def __str__(self) -> str:
+        return f"Unable to retrieve kanaal {self.kanaal}: {self.data}"
+
+
+class KanaalCreateException(KanaalException):
+    def __str__(self) -> str:
+        return f"Unable to create kanaal {self.kanaal}: {self.data}"
 
 
 def create_kanaal(kanaal: str) -> None:
@@ -26,7 +50,15 @@ def create_kanaal(kanaal: str) -> None:
     # look up the exchange in the registry
     _kanaal = next(k for k in KANAAL_REGISTRY if k.label == kanaal)
 
-    kanalen = client.get("kanaal", params={"naam": kanaal})
+    response_data = []
+
+    try:
+        response: Response = client.get("kanaal", params={"naam": kanaal})
+        kanalen: list[dict] = response.json() or []
+        response.raise_for_status()
+    except (RequestException, JSONDecodeError) as exception:
+        raise KanaalRequestException(kanaal=kanaal, data=response_data) from exception
+
     if kanalen:
         raise KanaalExists()
 
@@ -37,14 +69,22 @@ def create_kanaal(kanaal: str) -> None:
         f"{protocol}://{domain}{reverse('notifications:kanalen')}#{kanaal}"
     )
 
-    client.post(
-        "kanaal",
-        json={
-            "naam": kanaal,
-            "documentatieLink": documentation_url,
-            "filters": list(_kanaal.kenmerken),
-        },
-    )
+    response_data = {}
+
+    try:
+        response: Response = client.post(
+            "kanaal",
+            json={
+                "naam": kanaal,
+                "documentatieLink": documentation_url,
+                "filters": list(_kanaal.kenmerken),
+            },
+        )
+
+        response_data: dict = response.json() or {}
+        response.raise_for_status()
+    except (RequestException, JSONDecodeError) as exception:
+        raise KanaalCreateException(kanaal=kanaal, data=response_data) from exception
 
 
 class Command(BaseCommand):
@@ -82,3 +122,12 @@ class Command(BaseCommand):
                 self.stdout.write(f"Registered kanaal '{kanaal}' with {api_root}")
             except KanaalExists:
                 self.stderr.write(f"Kanaal '{kanaal}' already exists within {api_root}")
+            except KanaalRequestException:
+                self.stderr.write(
+                    f"Request to retrieve existing kanalen for {kanaal} failed. "
+                    "Skipping.."
+                )
+            except KanaalCreateException:
+                self.stderr.write(
+                    f"Request to create kanaal for {kanaal} failed. Skipping.."
+                )
