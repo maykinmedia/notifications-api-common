@@ -1,8 +1,13 @@
 import logging
+from typing import Optional
 
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.urls import reverse
+
+from requests import Response
+from requests.exceptions import JSONDecodeError, RequestException
+from zgw_consumers.models import Service
 
 from ...kanalen import KANAAL_REGISTRY
 from ...models import NotificationsConfig
@@ -11,11 +16,39 @@ from ...settings import get_setting
 logger = logging.getLogger(__name__)
 
 
-class KanaalExists(Exception):
-    pass
+class KanaalException(Exception):
+    kanaal: str
+    data: dict | list
+    service: Service
+
+    def __init__(
+        self, kanaal: str, service: Service, data: Optional[dict | list] = None
+    ):
+        super().__init__()
+
+        self.kanaal = kanaal
+        self.service = service
+        self.data = data or {}
 
 
-def create_kanaal(kanaal: str) -> None:
+class KanaalRequestException(KanaalException):
+    def __str__(self) -> str:
+        return (
+            f"Unable to retrieve kanaal {self.kanaal} from {self.service}: {self.data}"
+        )
+
+
+class KanaalCreateException(KanaalException):
+    def __str__(self) -> str:
+        return f"Unable to create kanaal {self.kanaal} at {self.service}: {self.data}"
+
+
+class KanaalExistsException(KanaalException):
+    def __str__(self) -> str:
+        return f"Kanaal '{self.kanaal}' already exists within {self.service}"
+
+
+def create_kanaal(kanaal: str, service: Service) -> None:
     """
     Create a kanaal, if it doesn't exist yet.
     """
@@ -26,9 +59,19 @@ def create_kanaal(kanaal: str) -> None:
     # look up the exchange in the registry
     _kanaal = next(k for k in KANAAL_REGISTRY if k.label == kanaal)
 
-    kanalen = client.get("kanaal", params={"naam": kanaal})
+    response_data = []
+
+    try:
+        response: Response = client.get("kanaal", params={"naam": kanaal})
+        kanalen: list[dict] = response.json() or []
+        response.raise_for_status()
+    except (RequestException, JSONDecodeError) as exception:
+        raise KanaalRequestException(
+            kanaal=kanaal, service=service, data=response_data
+        ) from exception
+
     if kanalen:
-        raise KanaalExists()
+        raise KanaalExistsException(kanaal=kanaal, service=service, data=response_data)
 
     # build up own documentation URL
     domain = Site.objects.get_current().domain
@@ -37,14 +80,22 @@ def create_kanaal(kanaal: str) -> None:
         f"{protocol}://{domain}{reverse('notifications:kanalen')}#{kanaal}"
     )
 
-    client.post(
-        "kanaal",
-        json={
-            "naam": kanaal,
-            "documentatieLink": documentation_url,
-            "filters": list(_kanaal.kenmerken),
-        },
-    )
+    try:
+        response: Response = client.post(
+            "kanaal",
+            json={
+                "naam": kanaal,
+                "documentatieLink": documentation_url,
+                "filters": list(_kanaal.kenmerken),
+            },
+        )
+
+        response_data: dict = response.json() or {}
+        response.raise_for_status()
+    except (RequestException, JSONDecodeError) as exception:
+        raise KanaalCreateException(
+            kanaal=kanaal, service=service, data=response_data
+        ) from exception
 
 
 class Command(BaseCommand):
@@ -69,7 +120,7 @@ class Command(BaseCommand):
                 "`notifications_api_service` configured"
             )
 
-        api_root = config.notifications_api_service.api_root
+        service = config.notifications_api_service
 
         # use CLI arg or fall back to setting
         kanalen = options["kanalen"] or sorted(
@@ -78,7 +129,9 @@ class Command(BaseCommand):
 
         for kanaal in kanalen:
             try:
-                create_kanaal(kanaal)
-                self.stdout.write(f"Registered kanaal '{kanaal}' with {api_root}")
-            except KanaalExists:
-                self.stderr.write(f"Kanaal '{kanaal}' already exists within {api_root}")
+                create_kanaal(kanaal, service)
+                self.stdout.write(
+                    f"Registered kanaal '{kanaal}' with {service.api_root}"
+                )
+            except (KanaalException,) as exception:
+                self.stderr.write(f"{str(exception)} . Skipping..")

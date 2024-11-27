@@ -4,7 +4,6 @@ from django.contrib.messages import get_messages
 from django.utils.translation import gettext as _
 
 import pytest
-from requests import Response
 from requests.exceptions import HTTPError, RequestException
 
 from notifications_api_common.admin import register_webhook
