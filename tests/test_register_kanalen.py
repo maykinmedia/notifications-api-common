@@ -145,11 +145,9 @@ def test_register_kanalen_unknown_url(notifications_config, requests_mock):
 
     call_command("register_kanalen", kanalen=["foobar"], stderr=stderr)
 
-    failure_message = (
-        "Request to retrieve existing kanalen for foobar failed. Skipping.."
-    )
+    partial_failure_message = "Unable to retrieve kanaal foobar"
 
-    assert failure_message in stderr.getvalue()
+    assert partial_failure_message in stderr.getvalue()
 
     assert len(requests_mock.request_history) == 1
 
@@ -178,9 +176,9 @@ def test_register_kanalen_incorrect_post(notifications_config, requests_mock):
 
         call_command("register_kanalen", kanalen=["foobar"], stderr=stderr)
 
-    failure_message = "Request to create kanaal for foobar failed. Skipping.."
+    partial_failure_message = "Unable to create kanaal foobar"
 
-    assert failure_message in stderr.getvalue()
+    assert partial_failure_message in stderr.getvalue()
 
     assert len(requests_mock.request_history) == 2
 
