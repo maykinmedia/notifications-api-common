@@ -21,9 +21,7 @@ KANAAL_REGISTRY.update(kanalen)
 
 @pytest.mark.django_db
 def test_register_kanalen_success(notifications_config, requests_mock):
-    kanaal_url = (
-        f"{notifications_config.notifications_api_service.api_root}kanaal"
-    )
+    kanaal_url = f"{notifications_config.notifications_api_service.api_root}kanaal"
     params = urlencode(dict(naam="foobar"))
 
     requests_mock.get(f"{kanaal_url}?{params}", json=[])
@@ -34,11 +32,9 @@ def test_register_kanalen_success(notifications_config, requests_mock):
             "url": "http://example.com",
             "naam": "string",
             "documentatieLink": "http://example.com",
-            "filters": [
-                "string"
-            ],
+            "filters": ["string"],
         },
-        status_code=201
+        status_code=201,
     )
 
     reverse_patch = (
@@ -62,12 +58,8 @@ def test_register_kanalen_success(notifications_config, requests_mock):
 
 
 @pytest.mark.django_db
-def test_register_kanalen_from_registry_success(
-    notifications_config, requests_mock
-):
-    kanaal_url = (
-        f"{notifications_config.notifications_api_service.api_root}kanaal"
-    )
+def test_register_kanalen_from_registry_success(notifications_config, requests_mock):
+    kanaal_url = f"{notifications_config.notifications_api_service.api_root}kanaal"
 
     url_mapping = {
         kanaal.label: f"{kanaal_url}?{urlencode(dict(naam=kanaal.label))}"
@@ -83,11 +75,9 @@ def test_register_kanalen_from_registry_success(
                 "url": "http://example.com",
                 "naam": kanaal.label,
                 "documentatieLink": "http://example.com",
-                "filters": [
-                    "string"
-                ],
+                "filters": ["string"],
             },
-            status_code=201
+            status_code=201,
         )
 
     reverse_patch = (
@@ -116,15 +106,11 @@ def test_register_kanalen_from_registry_success(
 
 
 @pytest.mark.django_db
-def test_register_kanalen_existing_kanalen(
-    notifications_config, requests_mock
-):
+def test_register_kanalen_existing_kanalen(notifications_config, requests_mock):
     """
     Test that already registered kanalen does not cause issues
     """
-    kanaal_url = (
-        f"{notifications_config.notifications_api_service.api_root}kanaal"
-    )
+    kanaal_url = f"{notifications_config.notifications_api_service.api_root}kanaal"
     params = urlencode(dict(naam="foobar"))
 
     requests_mock.get(
@@ -136,7 +122,7 @@ def test_register_kanalen_existing_kanalen(
                 "documentatieLink": "http://example.com",
                 "filters": ["string"],
             }
-        ]
+        ],
     )
 
     call_command("register_kanalen", kanalen=["foobar"])
@@ -149,12 +135,8 @@ def test_register_kanalen_existing_kanalen(
 
 
 @pytest.mark.django_db
-def test_register_kanalen_unknown_url(
-    notifications_config, requests_mock
-):
-    kanaal_url = (
-        f"{notifications_config.notifications_api_service.api_root}kanaal"
-    )
+def test_register_kanalen_unknown_url(notifications_config, requests_mock):
+    kanaal_url = f"{notifications_config.notifications_api_service.api_root}kanaal"
     params = urlencode(dict(naam="foobar"))
 
     requests_mock.get(f"{kanaal_url}?{params}", status_code=404)
@@ -177,21 +159,13 @@ def test_register_kanalen_unknown_url(
 
 
 @pytest.mark.django_db
-def test_register_kanalen_incorrect_post(
-    notifications_config, requests_mock
-):
-    kanaal_url = (
-        f"{notifications_config.notifications_api_service.api_root}kanaal"
-    )
+def test_register_kanalen_incorrect_post(notifications_config, requests_mock):
+    kanaal_url = f"{notifications_config.notifications_api_service.api_root}kanaal"
     params = urlencode(dict(naam="foobar"))
 
     requests_mock.get(f"{kanaal_url}?{params}", json=[])
 
-    requests_mock.post(
-        kanaal_url,
-        json={"error": "foo"},
-        status_code=400
-    )
+    requests_mock.post(kanaal_url, json={"error": "foo"}, status_code=400)
 
     stderr = StringIO()
 
@@ -204,9 +178,7 @@ def test_register_kanalen_incorrect_post(
 
         call_command("register_kanalen", kanalen=["foobar"], stderr=stderr)
 
-    failure_message = (
-        "Request to create kanaal for foobar failed. Skipping.."
-    )
+    failure_message = "Request to create kanaal for foobar failed. Skipping.."
 
     assert failure_message in stderr.getvalue()
 
