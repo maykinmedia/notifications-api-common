@@ -121,12 +121,5 @@ class Command(BaseCommand):
                 self.stdout.write(f"Registered kanaal '{kanaal}' with {api_root}")
             except KanaalExists:
                 self.stderr.write(f"Kanaal '{kanaal}' already exists within {api_root}")
-            except KanaalRequestException:
-                self.stderr.write(
-                    f"Request to retrieve existing kanalen for {kanaal} failed. "
-                    "Skipping.."
-                )
-            except KanaalCreateException:
-                self.stderr.write(
-                    f"Request to create kanaal for {kanaal} failed. Skipping.."
-                )
+            except (KanaalRequestException, KanaalCreateException) as exception:
+                self.stderr.write(f"{str(exception)} . Skipping..")
