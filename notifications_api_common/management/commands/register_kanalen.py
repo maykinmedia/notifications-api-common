@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
@@ -22,11 +23,11 @@ class KanaalException(Exception):
     kanaal: str
     data: dict | list
 
-    def __init__(self, kanaal: str, data: dict | list = {}):
+    def __init__(self, kanaal: str, data: Optional[dict | list] = None):
         super().__init__()
 
         self.kanaal = kanaal
-        self.data = data
+        self.data = data or {}
 
 
 class KanaalRequestException(KanaalException):
