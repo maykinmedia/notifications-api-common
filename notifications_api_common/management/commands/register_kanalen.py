@@ -70,8 +70,6 @@ def create_kanaal(kanaal: str) -> None:
         f"{protocol}://{domain}{reverse('notifications:kanalen')}#{kanaal}"
     )
 
-    response_data = {}
-
     try:
         response: Response = client.post(
             "kanaal",
