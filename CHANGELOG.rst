@@ -2,6 +2,12 @@
 Changelog
 =========
 
+0.3.1 (2024-10-27)
+------------------
+
+* Fixed kanalen not being registered. This regression was introduced in `0.3.0`
+  (through `aa73035c285f7f5157148034a0e87149b6e1bcf0`).
+
 0.3.0 (2024-10-24)
 ------------------
 
