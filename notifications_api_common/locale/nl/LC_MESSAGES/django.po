@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.3.0\n"
+"Project-Id-Version: 0.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-14 13:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
