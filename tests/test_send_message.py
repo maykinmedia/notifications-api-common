@@ -11,7 +11,8 @@ from freezegun import freeze_time
 from notifications_api_common.tasks import NotificationException, send_notification
 from testapp.models import Person
 
-NOTIFICATIONS_API_ROOT = "http://some-api-root/api/v1/"
+from .conftest import NOTIFICATIONS_API_ROOT
+
 TESTS_DIR = Path(__file__).parent
 
 
