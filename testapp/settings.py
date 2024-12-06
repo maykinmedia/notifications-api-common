@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "simple_certmanager",
     "zgw_consumers",
     "notifications_api_common",
+    "django_setup_configuration",
     "testapp",
 ]
 
