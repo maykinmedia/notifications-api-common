@@ -23,6 +23,7 @@ Features
    :caption: Contents:
 
    quickstart
+   setup_config
 
 
 Indices and tables
