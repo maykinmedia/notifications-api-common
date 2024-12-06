@@ -3,7 +3,7 @@ Provide notifications kanaal/exchange classes.
 """
 
 from collections import defaultdict
-from typing import Dict, Tuple, Union
+from typing import Dict, Literal, Tuple
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db.models import Field, Model
@@ -18,8 +18,8 @@ class Kanaal:
         self,
         label: str,
         main_resource: Model,
-        kenmerken: Union[Tuple, None] = None,
-        extra_kwargs: Union[Dict, None] = None,
+        kenmerken: Tuple | None = None,
+        extra_kwargs: dict[str, dict[Literal["help_text"], str]] | None = None,
     ):
         self.label = label
         self.main_resource = main_resource
@@ -48,11 +48,11 @@ class Kanaal:
         )
 
     @staticmethod
-    def get_field(model: Model, field: str) -> Field:
+    def get_field(model: Model, field_name: str) -> Field:
         """
         Function to retrieve a field from a Model
         """
-        return model._meta.get_field(field)
+        return model._meta.get_field(field_name)
 
     def get_help_text(self, field: Field, kenmerk: str) -> str:
         """
@@ -66,8 +66,8 @@ class Kanaal:
     def get_kenmerken(
         self,
         obj: Model,
-        data: Union[Dict, None] = None,
-        request: Union[Request, None] = None,  # noqa
+        data: dict | None = None,
+        request: Request | None = None,  # noqa
     ) -> Dict:
         data = data or {}
         return {

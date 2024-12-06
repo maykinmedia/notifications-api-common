@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from django.contrib.messages import get_messages
 from django.utils.translation import gettext as _
 
@@ -50,7 +48,8 @@ def test_register_webhook_request_exception(
         channels=["zaken"],
     )
 
-    with patch("requests.Session.post", side_effect=RequestException("exception")):
+    with requests_mock.Mocker() as m:
+        m.post(f"{NOTIFICATIONS_API_ROOT}abonnement", exc=RequestException("exception"))
         register_webhook(object, request_with_middleware, Subscription.objects.all())
 
     messages = list(get_messages(request_with_middleware))
@@ -71,7 +70,8 @@ def test_register_webhook_http_error(request_with_middleware, notifications_conf
         channels=["zaken"],
     )
 
-    with patch("requests.Session.post", side_effect=HTTPError("400")):
+    with requests_mock.Mocker() as m:
+        m.post(f"{NOTIFICATIONS_API_ROOT}abonnement", exc=HTTPError("400"))
         register_webhook(object, request_with_middleware, Subscription.objects.all())
 
     messages = list(get_messages(request_with_middleware))
