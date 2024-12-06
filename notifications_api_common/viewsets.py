@@ -137,7 +137,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
             "aanmaakdatum": timezone.now(),
             # each channel knows which kenmerken it has, so delegate this
             "kenmerken": kanaal.get_kenmerken(
-                main_object, main_object_data, request=self.request
+                main_object, main_object_data, request=getattr(self, "request", None)
             ),
         }
 
