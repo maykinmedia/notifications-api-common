@@ -48,11 +48,11 @@ class Kanaal:
         )
 
     @staticmethod
-    def get_field(model: Model, field: str) -> Field:
+    def get_field(model: Model, field_name: str) -> Field:
         """
         Function to retrieve a field from a Model
         """
-        return model._meta.get_field(field)
+        return model._meta.get_field(field_name)
 
     def get_help_text(self, field: Field, kenmerk: str) -> str:
         """
