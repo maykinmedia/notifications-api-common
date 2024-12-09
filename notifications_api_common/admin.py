@@ -34,5 +34,5 @@ register_webhook.short_description = _("Register the webhooks")  # noqa
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("callback_url", "channels", "_subscription")
+    list_display = ("identifier", "callback_url", "channels", "_subscription")
     actions = [register_webhook]

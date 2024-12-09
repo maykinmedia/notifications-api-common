@@ -76,6 +76,13 @@ class Subscription(models.Model):
     TODO: on change/update, update the subscription
     """
 
+    identifier = models.SlugField(
+        unique=True,
+        blank=False,
+        null=False,
+        max_length=64,
+        help_text=_("A human-friendly identifier to refer to this subscription."),
+    )
     callback_url = models.URLField(
         _("callback url"), help_text=_("Where to send the notifications (webhook url)")
     )

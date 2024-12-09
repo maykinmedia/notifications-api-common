@@ -27,6 +27,7 @@ def test_register_webhook_success(
     request_with_middleware, notifications_config, *mocks
 ):
     subscription = Subscription.objects.create(
+        identifier="sub",
         callback_url="https://example.com/callback",
         client_id="client_id",
         secret="secret",
@@ -48,6 +49,7 @@ def test_register_webhook_request_exception(
     request_with_middleware, notifications_config
 ):
     Subscription.objects.create(
+        identifier="sub",
         callback_url="https://example.com/callback",
         client_id="client_id",
         secret="secret",
@@ -68,6 +70,7 @@ def test_register_webhook_request_exception(
 @pytest.mark.django_db
 def test_register_webhook_http_error(request_with_middleware, notifications_config):
     Subscription.objects.create(
+        identifier="sub",
         callback_url="https://example.com/callback",
         client_id="client_id",
         secret="secret",
