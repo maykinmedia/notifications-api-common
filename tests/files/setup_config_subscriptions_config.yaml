@@ -1,0 +1,19 @@
+notifications_subscriptions_config_enable: true
+notifications_subscriptions_config:
+  items:
+    - identifier: my-subscription
+      callback_url: http://my/callback
+      client_id: the-client
+      secret: supersecret
+      uuid: 0f616bfd-aacc-4d85-a140-2af17a56217b
+      channels:
+        - Foo
+        - Bar
+    - identifier: my-other-subscription
+      callback_url: http://my/other-callback
+      client_id: the-client
+      secret: supersecret
+      uuid: a33cf110-06b6-454e-b7e9-5139c172ca9a
+      channels:
+        - Fuh
+        - Bahr
