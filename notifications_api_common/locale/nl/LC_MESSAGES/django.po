@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-14 13:45+0100\n"
+"POT-Creation-Date: 2024-12-12 15:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:27
+#: admin.py:26
 #, python-brace-format
 msgid ""
 "Something went wrong while registering subscription for {callback}: "
@@ -27,7 +27,7 @@ msgstr ""
 "Er ging iets fout bij het registreren van een abonnement voor {callback}:"
 "{exception}"
 
-#: admin.py:33
+#: admin.py:32
 msgid "Register the webhooks"
 msgstr "Webhooks registreren"
 
@@ -115,88 +115,92 @@ msgstr ""
 msgid "Notifications API integration"
 msgstr "Integratie Notificaties-API"
 
-#: models.py:19
+#: models.py:20
 msgid "notifications api service"
 msgstr "service voor notificaties-api"
 
-#: models.py:26
+#: models.py:27
 msgid ""
 "The maximum number of automatic retries. After this amount of retries, "
 "guaranteed delivery stops trying to deliver the message."
 msgstr ""
-"De bovengrens voor het aantal automatische pogingen tot opnieuw verzenden. Na deze "
-"hoeveelheid pogingen stoppen de automatische afleverpogingen."
+"De bovengrens voor het aantal automatische pogingen tot opnieuw verzenden. "
+"Na deze hoeveelheid pogingen stoppen de automatische afleverpogingen."
 
-#: models.py:33
+#: models.py:34
 msgid ""
 "If specified, a factor applied to the exponential backoff. This allows you "
 "to tune how quickly automatic retries are performed."
 msgstr ""
-"Indien opgegeven wordt deze factor toegepast op de exponentiële vertraging. Dit laat "
-"toe om de frequentie van afleverpogingen in te stellen."
+"Indien opgegeven wordt deze factor toegepast op de exponentiële vertraging. "
+"Dit laat toe om de frequentie van afleverpogingen in te stellen."
 
-#: models.py:39
+#: models.py:40
 msgid "An upper limit in seconds to the exponential backoff time."
 msgstr "Een bovenlimiet in seconden voor de maximale exponentiële vertraging."
 
-#: models.py:46
+#: models.py:47
 msgid "Notificatiescomponentconfiguratie"
 msgstr "Notificatiescomponentconfiguratie"
 
-#: models.py:52
+#: models.py:53
 msgid "no service configured"
 msgstr "geen service ingesteld"
 
-#: models.py:54
+#: models.py:55
 #, python-brace-format
 msgid "Notifications API configuration ({api_root})"
 msgstr "Notificaties-API-configuratie ({api_root})"
 
-#: models.py:77
+#: models.py:84
+msgid "A human-friendly identifier to refer to this subscription."
+msgstr "Een voor mensen bedoelde kenmerkende naam om naar dit abonnement te verwijzen."
+
+#: models.py:87
 msgid "callback url"
 msgstr "callback-url"
 
-#: models.py:77
+#: models.py:87
 msgid "Where to send the notifications (webhook url)"
 msgstr "Waar de notificaties gepubliceerd moeten worden (webhook-url)"
 
-#: models.py:80
+#: models.py:90
 msgid "client ID"
 msgstr "client-ID"
 
-#: models.py:82
+#: models.py:92
 msgid "Client ID to construct the auth token"
 msgstr "Client-ID om het autorisatietoken mee te genereren"
 
-#: models.py:85
+#: models.py:95
 msgid "client secret"
 msgstr "client-secret"
 
-#: models.py:87
+#: models.py:97
 msgid "Secret to construct the auth token"
 msgstr "Secret om het autorisatietoken mee te genereren"
 
-#: models.py:91
+#: models.py:101
 msgid "channels"
 msgstr "kanalen"
 
-#: models.py:92
+#: models.py:102
 msgid "Comma-separated list of channels to subscribe to"
 msgstr "Kommagescheiden lijst van kanalen om op te abonneren"
 
-#: models.py:96
+#: models.py:106
 msgid "NC subscription"
 msgstr "Notificaties-API-abonnement"
 
-#: models.py:99
+#: models.py:109
 msgid "Subscription as it is known in the NC"
 msgstr "Abonnement zoals die bekend is in de Notificaties-API"
 
-#: models.py:103
+#: models.py:113
 msgid "Webhook subscription"
 msgstr "Webhook-abonnement"
 
-#: models.py:104
+#: models.py:114
 msgid "Webhook subscriptions"
 msgstr "Webhook-abonnementen"
 

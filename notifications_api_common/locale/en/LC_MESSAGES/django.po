@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-14 13:45+0100\n"
+"POT-Creation-Date: 2024-12-12 15:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:27
+#: admin.py:26
 #, python-brace-format
 msgid ""
 "Something went wrong while registering subscription for {callback}: "
@@ -27,7 +27,7 @@ msgstr ""
 "Something went wrong while registering subscription for {callback}: "
 "{exception}"
 
-#: admin.py:33
+#: admin.py:32
 msgid "Register the webhooks"
 msgstr "Register the webhooks"
 
@@ -115,11 +115,11 @@ msgstr ""
 msgid "Notifications API integration"
 msgstr "Notifications API integration"
 
-#: models.py:19
+#: models.py:20
 msgid "notifications api service"
 msgstr "notifications api service"
 
-#: models.py:26
+#: models.py:27
 msgid ""
 "The maximum number of automatic retries. After this amount of retries, "
 "guaranteed delivery stops trying to deliver the message."
@@ -127,7 +127,7 @@ msgstr ""
 "The maximum number of automatic retries. After this amount of retries, "
 "guaranteed delivery stops trying to deliver the message."
 
-#: models.py:33
+#: models.py:34
 msgid ""
 "If specified, a factor applied to the exponential backoff. This allows you "
 "to tune how quickly automatic retries are performed."
@@ -135,68 +135,72 @@ msgstr ""
 "If specified, a factor applied to the exponential backoff. This allows you "
 "to tune how quickly automatic retries are performed."
 
-#: models.py:39
+#: models.py:40
 msgid "An upper limit in seconds to the exponential backoff time."
 msgstr "An upper limit in seconds to the exponential backoff time."
 
-#: models.py:46
+#: models.py:47
 msgid "Notificatiescomponentconfiguratie"
 msgstr "Notifications component configuration"
 
-#: models.py:52
+#: models.py:53
 msgid "no service configured"
 msgstr "no service configured"
 
-#: models.py:54
+#: models.py:55
 #, python-brace-format
 msgid "Notifications API configuration ({api_root})"
 msgstr "Notifications API configuration ({api_root})"
 
-#: models.py:77
+#: models.py:84
+msgid "A human-friendly identifier to refer to this subscription."
+msgstr ""
+
+#: models.py:87
 msgid "callback url"
 msgstr "callback url"
 
-#: models.py:77
+#: models.py:87
 msgid "Where to send the notifications (webhook url)"
 msgstr "Where to send the notifications (webhook url)"
 
-#: models.py:80
+#: models.py:90
 msgid "client ID"
 msgstr "client ID"
 
-#: models.py:82
+#: models.py:92
 msgid "Client ID to construct the auth token"
 msgstr "Client ID to construct the auth token"
 
-#: models.py:85
+#: models.py:95
 msgid "client secret"
 msgstr "client secret"
 
-#: models.py:87
+#: models.py:97
 msgid "Secret to construct the auth token"
 msgstr "Secret to construct the auth token"
 
-#: models.py:91
+#: models.py:101
 msgid "channels"
 msgstr "channels"
 
-#: models.py:92
+#: models.py:102
 msgid "Comma-separated list of channels to subscribe to"
 msgstr "Comma-separated list of channels to subscribe to"
 
-#: models.py:96
+#: models.py:106
 msgid "NC subscription"
 msgstr "Notifications API subscription"
 
-#: models.py:99
+#: models.py:109
 msgid "Subscription as it is known in the NC"
 msgstr "Subscription as it is known in the Notifications API"
 
-#: models.py:103
+#: models.py:113
 msgid "Webhook subscription"
 msgstr "Webhook subscription"
 
-#: models.py:104
+#: models.py:114
 msgid "Webhook subscriptions"
 msgstr "Webhook subscriptions"
 
