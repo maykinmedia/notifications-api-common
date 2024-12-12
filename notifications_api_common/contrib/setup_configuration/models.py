@@ -6,7 +6,8 @@ from notifications_api_common.models import NotificationsConfig, Subscription
 
 class NotificationConfigurationModel(ConfigurationModel):
     notifications_api_service_identifier: str = DjangoModelRef(
-        NotificationsConfig, "notifications_api_service", default=""
+        NotificationsConfig,
+        "notifications_api_service",
     )
 
     class Meta:

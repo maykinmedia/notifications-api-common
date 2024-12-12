@@ -1,4 +1,5 @@
 import pytest
+from django_setup_configuration.exceptions import PrerequisiteFailed
 from django_setup_configuration.test_utils import execute_single_step
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -57,16 +58,15 @@ def test_execute_configuration_step_update_existing():
 
 @pytest.mark.django_db
 def test_execute_configuration_step_without_service_success():
-    execute_single_step(
-        NotificationConfigurationStep, yaml_source=CONFIG_FILE_PATH_NO_SERVICE
+    with pytest.raises(PrerequisiteFailed) as excinfo:
+        execute_single_step(
+            NotificationConfigurationStep, yaml_source=CONFIG_FILE_PATH_NO_SERVICE
+        )
+
+    assert (
+        "notifications_config.notifications_api_service_identifier\n  Input should be a valid string"
+        in str(excinfo.value)
     )
-
-    config = NotificationsConfig.get_solo()
-
-    assert config.notifications_api_service is None
-    assert config.notification_delivery_max_retries == 1
-    assert config.notification_delivery_retry_backoff == 2
-    assert config.notification_delivery_retry_backoff_max == 3
 
 
 @pytest.mark.django_db

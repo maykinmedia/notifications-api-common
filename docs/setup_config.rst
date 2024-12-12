@@ -50,9 +50,9 @@ Example file:
                 - Foo
                 - Bar
 
-If the ``notifications_api_service_identifier`` is specified, it might also be useful
+Because ``notifications_api_service_identifier`` is required, it might also be useful
 to use the `ServiceConfigurationStep <https://zgw-consumers.readthedocs.io/en/latest/setup_config.html>`_
-from ``zgw-consumers``.
+from ``zgw-consumers`` to configure the ``Service`` object for the notifications API.
 
 Note that the ``uuid`` field in your subscriptions config must point to an existing
 ``Abonnement`` in the Open Notificaties service configured through ``notifications_config``.
