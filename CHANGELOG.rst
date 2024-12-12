@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.4.0 (2024-12-12)
+------------------
+
+* Added an `identifier` field to the ``Subscription`` model
+* Introduced support for ``django-setup-configuration`` and added two 
+  ``ConfigurationStep`` implementations: ``NotificationConfigurationStep`` and
+  ``NotificationSubscriptionConfigurationStep``
+
 0.3.1 (2024-10-27)
 ------------------
 
