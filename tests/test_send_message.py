@@ -43,7 +43,7 @@ def test_api_create_person(api_client, notifications_config):
             "resourceUrl": f"http://testserver{person_url}",
             "actie": "create",
             "aanmaakdatum": "2022-01-01T00:00:00",
-            "kenmerken": {"addressStreet": "Grotestraat"},
+            "kenmerken": {"name": "John", "addressStreet": "Grotestraat"},
         }
     )
 

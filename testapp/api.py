@@ -19,9 +19,13 @@ class PersonViewSet(NotificationViewSetMixin, viewsets.ModelViewSet):
     serializer_class = PersonSerializer
     notifications_kanaal = Kanaal(
         "personen",
-        main_resource=Person,
-        kenmerken=("address_street",),
+        main_resource=Person(),
+        kenmerken=("name", "address_street"),
+        extra_kwargs={"address_street": {"help_text": "custom help text"}},
     )
+
+    def get_notification_main_object_url(self, data: dict, kanaal: Kanaal):
+        return data["url"]
 
 
 # URL routing

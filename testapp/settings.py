@@ -8,6 +8,9 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 SECRET_KEY = "so-secret-i-cant-believe-you-are-looking-at-this"
 
+PROJECT_NAME = "Notifications API Common"
+SITE_TITLE = "Notifications API Common"
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
