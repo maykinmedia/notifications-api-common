@@ -8,19 +8,25 @@ import pytest
 
 from notifications_api_common.kanalen import KANAAL_REGISTRY, Kanaal
 
-kanalen = set(
-    (
-        Kanaal(label="foobar", main_resource=Mock()),
-        Kanaal(label="boofar", main_resource=Mock()),
-    )
-)
 
-KANAAL_REGISTRY.clear()
-KANAAL_REGISTRY.update(kanalen)
+@pytest.fixture
+def override_kanalen():
+
+    kanalen = set(
+        (
+            Kanaal(label="foobar", main_resource=Mock()),
+            Kanaal(label="boofar", main_resource=Mock()),
+        )
+    )
+
+    KANAAL_REGISTRY.clear()
+    KANAAL_REGISTRY.update(kanalen)
 
 
 @pytest.mark.django_db
-def test_register_kanalen_success(notifications_config, requests_mock):
+def test_register_kanalen_success(
+    notifications_config, requests_mock, override_kanalen
+):
     kanaal_url = f"{notifications_config.notifications_api_service.api_root}kanaal"
     params = urlencode(dict(naam="foobar"))
 
@@ -58,27 +64,38 @@ def test_register_kanalen_success(notifications_config, requests_mock):
 
 
 @pytest.mark.django_db
-def test_register_kanalen_from_registry_success(notifications_config, requests_mock):
+def test_register_kanalen_from_registry_success(
+    notifications_config, requests_mock, override_kanalen
+):
     kanaal_url = f"{notifications_config.notifications_api_service.api_root}kanaal"
 
     url_mapping = {
-        kanaal.label: f"{kanaal_url}?{urlencode(dict(naam=kanaal.label))}"
-        for kanaal in kanalen
+        "foobar": f"{kanaal_url}?{urlencode(dict(naam='foobar'))}",
+        "boofar": f"{kanaal_url}?{urlencode(dict(naam='boofar'))}",
     }
 
-    for kanaal in kanalen:
-        requests_mock.get(url_mapping[kanaal.label], json=[])
-
-        requests_mock.post(
-            kanaal_url,
-            json={
-                "url": "http://example.com",
-                "naam": kanaal.label,
-                "documentatieLink": "http://example.com",
-                "filters": ["string"],
-            },
-            status_code=201,
-        )
+    requests_mock.get(url_mapping["foobar"], json=[])
+    requests_mock.post(
+        kanaal_url,
+        json={
+            "url": "http://example.com",
+            "naam": "foobar",
+            "documentatieLink": "http://example.com",
+            "filters": ["string"],
+        },
+        status_code=201,
+    )
+    requests_mock.get(url_mapping["boofar"], json=[])
+    requests_mock.post(
+        kanaal_url,
+        json={
+            "url": "http://example.com",
+            "naam": "boofar",
+            "documentatieLink": "http://example.com",
+            "filters": ["string"],
+        },
+        status_code=201,
+    )
 
     reverse_patch = (
         "notifications_api_common.management.commands.register_kanalen.reverse"
@@ -106,7 +123,9 @@ def test_register_kanalen_from_registry_success(notifications_config, requests_m
 
 
 @pytest.mark.django_db
-def test_register_kanalen_existing_kanalen(notifications_config, requests_mock):
+def test_register_kanalen_existing_kanalen(
+    notifications_config, requests_mock, override_kanalen
+):
     """
     Test that already registered kanalen does not cause issues
     """
@@ -135,7 +154,9 @@ def test_register_kanalen_existing_kanalen(notifications_config, requests_mock):
 
 
 @pytest.mark.django_db
-def test_register_kanalen_unknown_url(notifications_config, requests_mock):
+def test_register_kanalen_unknown_url(
+    notifications_config, requests_mock, override_kanalen
+):
     kanaal_url = f"{notifications_config.notifications_api_service.api_root}kanaal"
     params = urlencode(dict(naam="foobar"))
 
@@ -157,7 +178,9 @@ def test_register_kanalen_unknown_url(notifications_config, requests_mock):
 
 
 @pytest.mark.django_db
-def test_register_kanalen_incorrect_post(notifications_config, requests_mock):
+def test_register_kanalen_incorrect_post(
+    notifications_config, requests_mock, override_kanalen
+):
     kanaal_url = f"{notifications_config.notifications_api_service.api_root}kanaal"
     params = urlencode(dict(naam="foobar"))
 

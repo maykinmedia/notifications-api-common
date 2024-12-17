@@ -11,7 +11,8 @@ from freezegun import freeze_time
 from notifications_api_common.tasks import NotificationException, send_notification
 from testapp.models import Person
 
-NOTIFICATIONS_API_ROOT = "http://some-api-root/api/v1/"
+from .conftest import NOTIFICATIONS_API_ROOT
+
 TESTS_DIR = Path(__file__).parent
 
 
@@ -42,7 +43,7 @@ def test_api_create_person(api_client, notifications_config):
             "resourceUrl": f"http://testserver{person_url}",
             "actie": "create",
             "aanmaakdatum": "2022-01-01T00:00:00",
-            "kenmerken": {"addressStreet": "Grotestraat"},
+            "kenmerken": {"name": "John", "addressStreet": "Grotestraat"},
         }
     )
 

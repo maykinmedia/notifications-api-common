@@ -9,6 +9,8 @@ from zgw_consumers.models import Service
 from notifications_api_common.models import NotificationsConfig
 from testapp import urls  # noqa
 
+NOTIFICATIONS_API_ROOT = "http://some-api-root/api/v1/"
+
 
 def dummy_get_response(request):
     raise NotImplementedError()
