@@ -2,6 +2,17 @@
 Changelog
 =========
 
+0.5.0 (2024-12-20)
+------------------
+
+* Changes to ``Kanaal.get_kenmerken`` to:
+
+    * support nested kenmerken
+    * allow using the ``request`` parameter
+    * specify custom help texts for kenmerken
+* Add ``generate_notificaties`` management command (ported over from ``commonground-api-common``)
+* Update existing kanalen when running the ``register_kanalen`` management command
+
 0.4.0 (2024-12-12)
 ------------------
 
