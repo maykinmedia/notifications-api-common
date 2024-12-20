@@ -2,18 +2,29 @@
 Changelog
 =========
 
+0.5.0 (2024-12-20)
+------------------
+
+* Changes to ``Kanaal.get_kenmerken`` to:
+
+    * support nested kenmerken
+    * allow using the ``request`` parameter
+    * specify custom help texts for kenmerken
+* Add ``generate_notificaties`` management command (ported over from ``commonground-api-common``)
+* Update existing kanalen when running the ``register_kanalen`` management command
+
 0.4.0 (2024-12-12)
 ------------------
 
-* Added an `identifier` field to the ``Subscription`` model
-* Introduced support for ``django-setup-configuration`` and added two 
+* Added an ``identifier`` field to the ``Subscription`` model
+* Introduced support for ``django-setup-configuration`` and added two
   ``ConfigurationStep`` implementations: ``NotificationConfigurationStep`` and
   ``NotificationSubscriptionConfigurationStep``
 
 0.3.1 (2024-10-27)
 ------------------
 
-* Fixed kanalen not being registered. This regression was introduced in `0.3.0`.
+* Fixed kanalen not being registered. This regression was introduced in ``0.3.0``.
 
 0.3.0 (2024-10-24)
 ------------------
@@ -21,13 +32,14 @@ Changelog
 * Upgraded Django requirement  to >= 4.2
 * Upgraded minimum python requirement to >= 3.10
 * Added python 3.12 support
-* Added the `NOTIFICATIONS_GUARANTEE_DELIVERY` environment variable which allows
-  `RuntimeError`s to be raised (or not to) whenever no Notifications API is
-  configured. The default for this setting is set to `True`.
+* Added the ``NOTIFICATIONS_GUARANTEE_DELIVERY`` environment variable which allows
+  ``RuntimeError`` to be raised (or not to) whenever no Notifications API is
+  configured. The default for this setting is set to ``True``.
 * Upgraded zgw-consumers to 0.35.1
-  * This removed support for retrieving external OAS files to determine
-  * This requires `zgw_consumers.models.Service` ("service") instances to be
-    created to do external API calls through `zgw_consumer`
+
+    * This removed support for retrieving external OAS files to determine
+    * This requires ``zgw_consumers.models.Service`` ("service") instances to be
+      created to do external API calls through ``zgw_consumers``
 
 0.2.2 (2023-04-20)
 ------------------
