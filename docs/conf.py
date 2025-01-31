@@ -6,6 +6,8 @@
 
 # -- Path setup --------------------------------------------------------------
 
+import os
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -13,11 +15,12 @@
 import sys
 from pathlib import Path
 
-current_dir = Path(__file__).parent.parent
-code_directory = current_dir / "notifications_api_common"
+import django
 
-sys.path.insert(0, code_directory)
-
+_root_dir = Path(__file__).parent.parent.resolve()
+sys.path.insert(0, str(_root_dir))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "testapp.settings")
+django.setup()
 
 # -- Project information -----------------------------------------------------
 
@@ -37,6 +40,7 @@ release = "0.5.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.todo",
+    "django_setup_configuration.documentation.setup_config_example",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
