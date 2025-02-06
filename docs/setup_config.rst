@@ -7,10 +7,16 @@ Loading notification configuration from a YAML file
 This library provides two ``ConfigurationStep`` implementations
 (from the library ``django-setup-configuration``, see the
 `documentation <https://github.com/maykinmedia/django-setup-configuration>`_
-for more information on how to run ``setup_configuration``): one to configure the 
+for more information on how to run ``setup_configuration``): one to configure the
 service and retry settings, another to configure notification endpoint subscriptions.
 
-To add these steps to your configuration steps, add ``django_setup_configuration`` 
+To make use of this, you must install the ``setup-configuration`` dependency group:
+
+.. code-block:: bash
+
+    pip install zgw-consumers[setup-configuration]
+
+To add these steps to your configuration steps, add ``django_setup_configuration``
 to ``INSTALLED_APPS`` and add the following settings:
 
     .. code:: python
@@ -24,31 +30,14 @@ to ``INSTALLED_APPS`` and add the following settings:
             ...
         ]
 
-The YAML file that is passed to ``setup_configuration`` must set the appropriate 
+The YAML file that is passed to ``setup_configuration`` must set the appropriate
 flag and fields for both steps:
 
 Example file:
 
-    .. code:: yaml
+.. setup-config-example:: notifications_api_common.contrib.setup_configuration.steps.NotificationConfigurationStep
 
-        notifications_config_enable: True
-        notifications_config:
-          notifications_api_service_identifier: notifs-api
-          notification_delivery_max_retries: 1
-          notification_delivery_retry_backoff: 2
-          notification_delivery_retry_backoff_max: 3
-
-        notifications_subscriptions_config_enable: true
-        notifications_subscriptions_config:
-          items:
-            - identifier: my-subscription
-              callback_url: http://my/callback
-              client_id: the-client
-              secret: supersecret
-              uuid: 0f616bfd-aacc-4d85-a140-2af17a56217b
-              channels:
-                - Foo
-                - Bar
+.. setup-config-example:: notifications_api_common.contrib.setup_configuration.steps.NotificationSubscriptionConfigurationStep
 
 Because ``notifications_api_service_identifier`` is required, it might also be useful
 to use the `ServiceConfigurationStep <https://zgw-consumers.readthedocs.io/en/latest/setup_config.html>`_
