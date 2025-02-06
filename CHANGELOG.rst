@@ -2,6 +2,11 @@
 Changelog
 =========
 
+0.6.0 (2025-02-06)
+------------------
+
+* Update setup-config docs to use example directive and add extra example values to models
+
 0.5.0 (2024-12-20)
 ------------------
 
