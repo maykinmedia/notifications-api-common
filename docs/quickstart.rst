@@ -33,7 +33,6 @@ Add the following apps
 .. code-block:: python
 
     ...,
-    "django.contrib.sites",
     "rest_framework",
     "solo",
     "simple_certmanager",
