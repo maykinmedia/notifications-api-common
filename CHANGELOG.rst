@@ -2,6 +2,12 @@
 Changelog
 =========
 
+0.6.1 (2025-03-17)
+------------------
+
+* [#31] Add ``notificaties.md`` in manifest to make sure ``src/manage.py generate_notificaties`` works
+* Fix incorrect kanaal name anchors on kanalen page
+
 0.6.0 (2025-02-06)
 ------------------
 
