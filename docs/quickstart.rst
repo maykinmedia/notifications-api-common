@@ -63,7 +63,7 @@ Configuration
 In the admin interface, open the notifications configuration and create a ``Service``
 for the NC to use.
 
-Make sure you also have the ``Sites`` set up correctly, as the domain
+Make sure you also have the ``SITE_DOMAIN`` setting set up correctly, as the domain
 configured there is used to build the documentation URL.
 
 After entering the configuration, you can register your channels - this action

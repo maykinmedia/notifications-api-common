@@ -2,6 +2,18 @@
 Changelog
 =========
 
+0.7.0 (2025-03-18)
+------------------
+
+* [#31] Add ``notificaties.md`` in manifest to make sure ``src/manage.py generate_notificaties`` works
+* Fix incorrect kanaal name anchors on kanalen page
+* [#59] Remove ``django.contrib.sites`` dependency and add ``SITE_DOMAIN`` environment variable
+
+  .. warning::
+
+      The ``SITE_DOMAIN`` must be configured to the correct domain to ensure ``src/manage.py register_kanalen`` works
+      (e.g. if your application is hosted at ``application.local``, ``SITE_DOMAIN=application.local``)
+
 0.6.0 (2025-02-06)
 ------------------
 
