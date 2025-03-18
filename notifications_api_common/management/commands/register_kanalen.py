@@ -1,7 +1,6 @@
 import logging
 from typing import Optional
 
-from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand, CommandError
 from django.urls import reverse
 
@@ -78,7 +77,7 @@ def construct_kanaal_request_data(kanaal: str):
     _kanaal = next(k for k in KANAAL_REGISTRY if k.label == kanaal)
 
     # build up own documentation URL
-    domain = Site.objects.get_current().domain
+    domain = get_setting("SITE_DOMAIN")
     protocol = "https" if get_setting("IS_HTTPS") else "http"
     documentation_url = (
         f"{protocol}://{domain}{reverse('notifications:kanalen')}#{kanaal}"
