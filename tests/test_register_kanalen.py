@@ -9,7 +9,7 @@ from furl import furl
 
 from notifications_api_common.kanalen import KANAAL_REGISTRY, Kanaal
 
-from .conftest import NOTIFICATIONS_API_ROOT, SITE_DOMAIN
+from .conftest import NOTIFICATIONS_API_ROOT
 
 KANALEN_LIST_URL = (furl(NOTIFICATIONS_API_ROOT) / "kanaal").url
 
@@ -31,7 +31,6 @@ def override_kanalen():
 
 
 @pytest.mark.django_db
-@override_settings(SITE_DOMAIN=SITE_DOMAIN)
 def test_register_kanalen_success(
     notifications_config, requests_mock, override_kanalen
 ):
@@ -64,7 +63,6 @@ def test_register_kanalen_success(
 
 
 @pytest.mark.django_db
-@override_settings(SITE_DOMAIN=SITE_DOMAIN)
 def test_register_kanalen_from_registry_success(
     notifications_config, requests_mock, override_kanalen
 ):
@@ -110,7 +108,6 @@ def test_register_kanalen_from_registry_success(
 
 
 @pytest.mark.django_db
-@override_settings(SITE_DOMAIN=SITE_DOMAIN)
 def test_register_kanalen_existing_kanalen(
     notifications_config, requests_mock, override_kanalen
 ):
@@ -200,7 +197,6 @@ def test_register_kanalen_existing_kanalen(
 
 
 @pytest.mark.django_db
-@override_settings(SITE_DOMAIN=SITE_DOMAIN)
 def test_register_kanalen_unknown_url(
     notifications_config, requests_mock, override_kanalen
 ):
@@ -224,7 +220,6 @@ def test_register_kanalen_unknown_url(
 
 
 @pytest.mark.django_db
-@override_settings(SITE_DOMAIN=SITE_DOMAIN)
 def test_register_kanalen_incorrect_post(
     notifications_config, requests_mock, override_kanalen
 ):
@@ -250,7 +245,6 @@ def test_register_kanalen_incorrect_post(
 
 
 @pytest.mark.django_db
-@override_settings(SITE_DOMAIN=SITE_DOMAIN)
 def test_register_kanalen_update_fails(
     notifications_config, requests_mock, override_kanalen
 ):

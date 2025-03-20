@@ -50,6 +50,7 @@ Three additional settings are available:
   not raise a RuntimeError when the Notifications API is unconfigured.
 * ``IS_HTTPS``: a boolean, default ``True``. Set to ``False`` to indicate that
   no HTTPS is being used.
+* ``SITE_DOMAIN``: a string, default ``example.com``. Defines the main domain of the site. 
 
 Make sure to migrate your database:
 
