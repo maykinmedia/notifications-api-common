@@ -2,6 +2,11 @@
 Changelog
 =========
 
+0.7.1 (2025-03-20)
+------------------
+
+* Fix quickstart.rst and add ``example.com`` as default value for SITE_DOMAIN
+
 0.7.0 (2025-03-18)
 ------------------
 
