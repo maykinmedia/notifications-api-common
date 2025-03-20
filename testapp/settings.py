@@ -69,4 +69,4 @@ TEMPLATES = [
 
 ROOT_URLCONF = "testapp.urls"
 
-SITE_ID = 1
+SITE_DOMAIN = "example.com"

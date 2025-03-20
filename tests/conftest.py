@@ -10,7 +10,6 @@ from notifications_api_common.models import NotificationsConfig
 from testapp import urls  # noqa
 
 NOTIFICATIONS_API_ROOT = "http://some-api-root/api/v1/"
-SITE_DOMAIN = "example.com"
 
 
 def dummy_get_response(request):
