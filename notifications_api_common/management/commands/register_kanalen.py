@@ -11,6 +11,7 @@ from requests.exceptions import JSONDecodeError, RequestException
 from ...kanalen import KANAAL_REGISTRY
 from ...models import NotificationsConfig
 from ...settings import get_setting
+from ...utils import get_domain
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +78,7 @@ def construct_kanaal_request_data(kanaal: str):
     _kanaal = next(k for k in KANAAL_REGISTRY if k.label == kanaal)
 
     # build up own documentation URL
-    domain = get_setting("SITE_DOMAIN")
+    domain = get_domain()
     protocol = "https" if get_setting("IS_HTTPS") else "http"
     documentation_url = (
         f"{protocol}://{domain}{reverse('notifications:kanalen')}#{kanaal}"

@@ -9,7 +9,7 @@ IS_HTTPS = True
 
 NOTIFICATIONS_GUARANTEE_DELIVERY = True
 
-SITE_DOMAIN = "example.com"
+NOTIFICATIONS_API_GET_DOMAIN = "notifications_api_common.utils.get_site_domain"
 
 
 def get_setting(name: str) -> Any:
