@@ -2,10 +2,12 @@ from django.conf import settings
 from django.db import models
 from django.http import HttpRequest
 from django.urls import Resolver404, ResolverMatch, get_resolver, get_script_prefix
+from django.utils.module_loading import import_string
 
 from rest_framework.viewsets import ViewSet
 
 from .kanalen import Kanaal
+from .settings import get_setting
 
 
 def notification_documentation(kanaal: Kanaal):
@@ -74,3 +76,22 @@ def get_resource_for_path(path: str) -> models.Model:
     filter_kwargs = {viewset.lookup_field: viewset.kwargs[lookup_url_kwarg]}
 
     return viewset.get_queryset().get(**filter_kwargs)
+
+
+def get_domain() -> str:
+    """
+    Derive the domain where the application is hosted.
+    """
+    getter = import_string(get_setting("NOTIFICATIONS_API_GET_DOMAIN"))
+    return getter()
+
+
+def get_site_domain() -> str:
+    """
+    Derive the domain where the application is hosted.
+
+    You can provide an alternative implementation via the
+    ``NOTIFICATIONS_API_GET_DOMAIN`` setting, which takes a dotted path to a
+    callable taking no arguments.
+    """
+    return settings.SITE_DOMAIN

@@ -50,7 +50,9 @@ Three additional settings are available:
   not raise a RuntimeError when the Notifications API is unconfigured.
 * ``IS_HTTPS``: a boolean, default ``True``. Set to ``False`` to indicate that
   no HTTPS is being used.
-* ``SITE_DOMAIN``: a string, default ``example.com``. Defines the main domain of the site. 
+* ``NOTIFICATIONS_API_GET_DOMAIN``: a string, default ``notifications_api_common.utils.get_site_domain``.  
+  You can set a different dot path to specify which method should be used to get the domain.
+
 
 Make sure to migrate your database:
 
