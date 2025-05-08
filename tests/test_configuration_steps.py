@@ -57,16 +57,15 @@ def test_execute_configuration_step_update_existing():
 
 
 @pytest.mark.django_db
-def test_execute_configuration_step_without_service_success():
+def test_execute_configuration_step_without_service_is_not_allowed():
     with pytest.raises(PrerequisiteFailed) as excinfo:
         execute_single_step(
             NotificationConfigurationStep, yaml_source=CONFIG_FILE_PATH_NO_SERVICE
         )
 
-    assert (
-        "notifications_config.notifications_api_service_identifier\n  Input should be a valid string"
-        in str(excinfo.value)
-    )
+    assert "notifications_api_service_identifier" in str(excinfo.value)
+    assert "validation error" in str(excinfo.value)
+    assert "Field required" in str(excinfo.value)
 
 
 @pytest.mark.django_db
