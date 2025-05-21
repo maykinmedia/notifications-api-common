@@ -117,7 +117,7 @@ def test_api_create_person_unconfigured(api_client, notifications_config):
     data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
 
     with pytest.raises(RuntimeError):
-        response = api_client.post(url, data)
+        api_client.post(url, data)
 
     assert Person.objects.count() == 0
 
@@ -132,6 +132,6 @@ def test_api_create_person_unconfigured_notifications_guarantee_delivery_false(
     url = reverse("person-list")
     data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
 
-    response = api_client.post(url, data)
+    api_client.post(url, data)
 
     assert Person.objects.count() == 1
