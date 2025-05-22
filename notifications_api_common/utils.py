@@ -22,7 +22,7 @@ def notification_documentation(kanaal: Kanaal):
 **Resources en acties**
 """
     for resource, actions in kanaal.get_usage():
-        doc += f"""- `{resource}`: {', '.join(actions)}\n"""
+        doc += f"""- `{resource}`: {", ".join(actions)}\n"""
     return doc
 
 

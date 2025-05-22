@@ -1,7 +1,6 @@
 from io import StringIO
 from unittest.mock import Mock
 
-from django.test import override_settings
 from django.test.testcases import call_command
 
 import pytest
@@ -16,7 +15,6 @@ KANALEN_LIST_URL = (furl(NOTIFICATIONS_API_ROOT) / "kanaal").url
 
 @pytest.fixture
 def override_kanalen():
-
     kanalen = set(
         (
             Kanaal(
