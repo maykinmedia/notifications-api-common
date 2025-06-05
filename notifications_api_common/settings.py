@@ -11,6 +11,8 @@ NOTIFICATIONS_GUARANTEE_DELIVERY = True
 
 NOTIFICATIONS_API_GET_DOMAIN = "notifications_api_common.utils.get_site_domain"
 
+TIME_LEEWAY = 0
+
 
 def get_setting(name: str) -> Any:
     this_module = sys.modules[__name__]
