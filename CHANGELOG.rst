@@ -2,6 +2,20 @@
 Changelog
 =========
 
+0.7.3 (2025-06-17)
+------------------
+
+**New features**
+
+* [#37] Set the ``notifications_api_service_identifier`` field as required in setup-configuration
+* Add the env variable ``TIME_LEEWAY`` that defines a leeway in ``UntilNowValidator``
+
+**Maintenance**
+
+* [maykinmedia/open-api-framework#132] Replace ``check_sphinx.py`` with ``make``
+* [maykinmedia/open-api-framework#133] Replace ``black``, ``isort`` and ``flake8`` with ``ruff`` and update code-quality workflow
+* [maykinmedia/open-api-framework#140] Upgrade python to 3.12
+
 0.7.2 (2025-03-28)
 ------------------
 
