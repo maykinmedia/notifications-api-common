@@ -40,6 +40,13 @@ class NotificationsConfig(SingletonModel):
         help_text=_("An upper limit in seconds to the exponential backoff time."),
         default=48,
     )
+    notification_delivery_base_factor = models.PositiveIntegerField(
+        help_text=_(
+            "The base factor used for exponential backoff. Default is 2 (binary), "
+            "but can be increased (e.g., 3 or 4) to spread retries over a longer time period."
+        ),
+        default=2,
+    )
 
     objects = NotificationsConfigManager()
 

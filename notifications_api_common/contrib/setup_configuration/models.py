@@ -18,6 +18,7 @@ class NotificationConfigurationModel(ConfigurationModel):
                 "notification_delivery_max_retries",
                 "notification_delivery_retry_backoff",
                 "notification_delivery_retry_backoff_max",
+                "notification_delivery_base_factor",
             ]
         }
 
