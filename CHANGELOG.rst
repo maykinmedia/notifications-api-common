@@ -2,6 +2,23 @@
 Changelog
 =========
 
+0.8.0 (2025-07-08)
+------------------
+
+**New features**
+
+* [open-zaak/open-notificaties#290] Add configurable base factor for retry mechanism,
+  this is also configurable via ``setup_configuration`` via the attribute ``notification_delivery_base_factor`` (default: 4)
+* Modify defaults for retry behavior:
+
+  * ``notification_delivery_max_retries`` to 7
+  * ``notification_delivery_retry_backoff`` to 25
+  * ``notification_delivery_retry_backoff_max`` to 52000
+
+**Maintenance**
+
+* Replace ``bumpversion`` with ``bump-my-version``
+
 0.7.3 (2025-06-17)
 ------------------
 
