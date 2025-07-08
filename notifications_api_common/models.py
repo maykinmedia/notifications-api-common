@@ -27,7 +27,7 @@ class NotificationsConfig(SingletonModel):
             "The maximum number of automatic retries. After this amount of retries, "
             "guaranteed delivery stops trying to deliver the message."
         ),
-        default=6,
+        default=7,
     )
     notification_delivery_retry_backoff = models.PositiveIntegerField(
         help_text=_(
