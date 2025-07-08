@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.7.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-12 15:28+0100\n"
+"POT-Creation-Date: 2025-07-08 04:08-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -139,71 +139,81 @@ msgstr ""
 msgid "An upper limit in seconds to the exponential backoff time."
 msgstr "Een bovenlimiet in seconden voor de maximale exponentiële vertraging."
 
-#: models.py:47
+#: models.py:45
+msgid ""
+"The base factor used for exponential backoff. This can be increased or "
+"decreased to spread retries over a longer or shorter time period."
+msgstr ""
+"De basisfactor die wordt gebruikt voor exponentiële backoff. Deze kan worden verhoogd "
+"of verlaagd om retries over een langere of kortere periode te spreiden."
+
+#: models.py:54
 msgid "Notificatiescomponentconfiguratie"
 msgstr "Notificatiescomponentconfiguratie"
 
-#: models.py:53
+#: models.py:60
 msgid "no service configured"
 msgstr "geen service ingesteld"
 
-#: models.py:55
+#: models.py:62
 #, python-brace-format
 msgid "Notifications API configuration ({api_root})"
 msgstr "Notificaties-API-configuratie ({api_root})"
 
-#: models.py:84
+#: models.py:91
 msgid "A human-friendly identifier to refer to this subscription."
-msgstr "Een voor mensen bedoelde kenmerkende naam om naar dit abonnement te verwijzen."
+msgstr ""
+"Een voor mensen bedoelde kenmerkende naam om naar dit abonnement te "
+"verwijzen."
 
-#: models.py:87
+#: models.py:94
 msgid "callback url"
 msgstr "callback-url"
 
-#: models.py:87
+#: models.py:94
 msgid "Where to send the notifications (webhook url)"
 msgstr "Waar de notificaties gepubliceerd moeten worden (webhook-url)"
 
-#: models.py:90
+#: models.py:97
 msgid "client ID"
 msgstr "client-ID"
 
-#: models.py:92
+#: models.py:99
 msgid "Client ID to construct the auth token"
 msgstr "Client-ID om het autorisatietoken mee te genereren"
 
-#: models.py:95
+#: models.py:102
 msgid "client secret"
 msgstr "client-secret"
 
-#: models.py:97
+#: models.py:104
 msgid "Secret to construct the auth token"
 msgstr "Secret om het autorisatietoken mee te genereren"
 
-#: models.py:101
+#: models.py:108
 msgid "channels"
 msgstr "kanalen"
 
-#: models.py:102
+#: models.py:109
 msgid "Comma-separated list of channels to subscribe to"
 msgstr "Kommagescheiden lijst van kanalen om op te abonneren"
 
-#: models.py:106
+#: models.py:113
 msgid "NC subscription"
 msgstr "Notificaties-API-abonnement"
 
-#: models.py:109
+#: models.py:116
 msgid "Subscription as it is known in the NC"
 msgstr "Abonnement zoals die bekend is in de Notificaties-API"
 
-#: models.py:113
+#: models.py:120
 msgid "Webhook subscription"
 msgstr "Webhook-abonnement"
 
-#: models.py:114
+#: models.py:121
 msgid "Webhook subscriptions"
 msgstr "Webhook-abonnementen"
 
-#: validators.py:19
+#: validators.py:24
 msgid "Ensure this value is not in the future."
 msgstr "Zorg dat deze waarde niet in de toekomst ligt."
