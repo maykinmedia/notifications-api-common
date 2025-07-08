@@ -28,6 +28,7 @@ def test_execute_configuration_step_success():
     assert config.notification_delivery_max_retries == 1
     assert config.notification_delivery_retry_backoff == 2
     assert config.notification_delivery_retry_backoff_max == 3
+    assert config.notification_delivery_base_factor == 2
 
 
 @pytest.mark.django_db
@@ -44,6 +45,7 @@ def test_execute_configuration_step_update_existing():
     config.notification_delivery_max_retries = 1
     config.notification_delivery_retry_backoff = 2
     config.notification_delivery_retry_backoff_max = 3
+    config.notification_delivery_base_factor = 2
     config.save()
 
     execute_single_step(NotificationConfigurationStep, yaml_source=CONFIG_FILE_PATH)
@@ -54,6 +56,7 @@ def test_execute_configuration_step_update_existing():
     assert config.notification_delivery_max_retries == 1
     assert config.notification_delivery_retry_backoff == 2
     assert config.notification_delivery_retry_backoff_max == 3
+    assert config.notification_delivery_base_factor == 2
 
 
 @pytest.mark.django_db
@@ -81,6 +84,7 @@ def test_execute_configuration_step_idempotent():
         assert config.notification_delivery_max_retries == 1
         assert config.notification_delivery_retry_backoff == 2
         assert config.notification_delivery_retry_backoff_max == 3
+        assert config.notification_delivery_base_factor == 2
 
     execute_single_step(NotificationConfigurationStep, yaml_source=CONFIG_FILE_PATH)
 

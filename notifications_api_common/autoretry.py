@@ -1,7 +1,7 @@
 from celery.exceptions import Ignore, Retry
-from celery.utils.time import get_exponential_backoff_interval
 from vine.utils import wraps
 
+from .exponential_backoff import get_exponential_backoff_interval
 from .models import NotificationsConfig
 
 
@@ -41,6 +41,7 @@ def add_autoretry_behaviour(task, **options):
             max_retries = config.notification_delivery_max_retries
             retry_backoff = config.notification_delivery_retry_backoff
             retry_backoff_max = config.notification_delivery_retry_backoff_max
+            base_factor = config.notification_delivery_base_factor
 
             task.max_retries = max_retries
 
@@ -58,6 +59,7 @@ def add_autoretry_behaviour(task, **options):
                         factor=retry_backoff,
                         retries=task.request.retries,
                         maximum=retry_backoff_max,
+                        base=base_factor,
                         full_jitter=retry_jitter,
                     )
                 # Override max_retries

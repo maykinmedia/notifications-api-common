@@ -27,18 +27,25 @@ class NotificationsConfig(SingletonModel):
             "The maximum number of automatic retries. After this amount of retries, "
             "guaranteed delivery stops trying to deliver the message."
         ),
-        default=5,
+        default=7,
     )
     notification_delivery_retry_backoff = models.PositiveIntegerField(
         help_text=_(
             "If specified, a factor applied to the exponential backoff. "
             "This allows you to tune how quickly automatic retries are performed."
         ),
-        default=3,
+        default=25,
     )
     notification_delivery_retry_backoff_max = models.PositiveIntegerField(
         help_text=_("An upper limit in seconds to the exponential backoff time."),
-        default=48,
+        default=52000,
+    )
+    notification_delivery_base_factor = models.PositiveIntegerField(
+        help_text=_(
+            "The base factor used for exponential backoff. "
+            "This can be increased or decreased to spread retries over a longer or shorter time period."
+        ),
+        default=4,
     )
 
     objects = NotificationsConfigManager()

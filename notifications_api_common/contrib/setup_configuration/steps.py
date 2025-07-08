@@ -53,6 +53,10 @@ class NotificationConfigurationStep(
             config.notification_delivery_retry_backoff_max = (
                 model.notification_delivery_retry_backoff_max
             )
+        if model.notification_delivery_base_factor:
+            config.notification_delivery_base_factor = (
+                model.notification_delivery_base_factor
+            )
 
         config.save()
 

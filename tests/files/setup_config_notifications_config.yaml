@@ -4,3 +4,4 @@ notifications_config:
   notification_delivery_max_retries: 1
   notification_delivery_retry_backoff: 2
   notification_delivery_retry_backoff_max: 3
+  notification_delivery_base_factor: 2
