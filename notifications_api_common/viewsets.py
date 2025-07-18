@@ -90,7 +90,9 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # object is/should be
         return data[self.get_main_resource_key(kanaal)]
 
-    def construct_message(self, data: dict, instance: models.Model = None) -> dict:
+    def construct_message(
+        self, data: dict, instance: models.Model = None, kanaal=None, model=None
+    ) -> dict:
         """
         Construct the message to send to the notification component.
 
@@ -101,10 +103,10 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         of the resource, so for sub-resources we can use this to get a
         reference back to the main resource.
         """
-        kanaal = self.get_kanaal()
+        kanaal = kanaal if kanaal else self.get_kanaal()
         assert isinstance(kanaal, Kanaal), "`kanaal` should be a `Kanaal` instance"
 
-        model = self.get_queryset().model
+        model = model if model else self.get_queryset().model
 
         if model is kanaal.main_resource:
             # look up the object in the database from its absolute URL
@@ -146,33 +148,9 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         serializer = NotificatieSerializer(instance=message_data)
         return camelize(serializer.data)
 
-    def notify(
-        self, status_code: int, data: Union[List, Dict], instance: models.Model = None
-    ) -> None:
-        if get_setting("NOTIFICATIONS_DISABLED"):
-            return
-
-        # do nothing unless we have a 'success' status code - early exit here
-        if not 200 <= status_code < 300:
-            logger.info(
-                "Not notifying, status code '%s' does not represent success.",
-                status_code,
-            )
-            return
-
+    def _message(self, data, instance=None):
         # build the content of the notification
         message = self.construct_message(data, instance=instance)
-
-        # build the client from the singleton config.
-        # This will raise an exception if the config is not complete unless
-        # NOTIFICATIONS_GUARANTEE_DELIVERY is explicitly set to False
-        client = NotificationsConfig.get_client()
-        if client is None:
-            msg = "Not notifying, Notifications API configuration is broken or absent."
-            logger.warning(msg)
-            if get_setting("NOTIFICATIONS_GUARANTEE_DELIVERY"):
-                raise RuntimeError(msg)
-            return
 
         # We've performed all the work that can raise uncaught exceptions that we can
         # still put inside an atomic transaction block. Next, we schedule the actual
@@ -187,6 +165,33 @@ class NotificationMixin(metaclass=NotificationMixinBase):
             send_notification.delay(message)
 
         transaction.on_commit(_send)
+
+    def notify(
+        self, status_code: int, data: Union[List, Dict], instance: models.Model = None
+    ) -> None:
+        if get_setting("NOTIFICATIONS_DISABLED"):
+            return
+
+        # do nothing unless we have a 'success' status code - early exit here
+        if not 200 <= status_code < 300:
+            logger.info(
+                "Not notifying, status code '%s' does not represent success.",
+                status_code,
+            )
+            return
+
+        # build the client from the singleton config.
+        # This will raise an exception if the config is not complete unless
+        # NOTIFICATIONS_GUARANTEE_DELIVERY is explicitly set to False
+        client = NotificationsConfig.get_client()
+        if client is None:
+            msg = "Not notifying, Notifications API configuration is broken or absent."
+            logger.warning(msg)
+            if get_setting("NOTIFICATIONS_GUARANTEE_DELIVERY"):
+                raise RuntimeError(msg)
+            return
+
+        self._message(data, instance)
 
 
 class NotificationCreateMixin(NotificationMixin):
