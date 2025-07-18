@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.8.1 (2025-07-18)
+------------------
+
+**Maintenance**
+
+* [open-zaak/open-zaak#2114] move construct and send message to separate method
+* [#51] Use codecov with token to avoid 429 errors
+
 0.8.0 (2025-07-08)
 ------------------
 
