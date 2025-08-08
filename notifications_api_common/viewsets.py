@@ -91,7 +91,12 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         return data[self.get_main_resource_key(kanaal)]
 
     def construct_message(
-        self, data: dict, instance: models.Model = None, kanaal=None, model=None
+        self,
+        data: dict,
+        instance: models.Model = None,
+        kanaal=None,
+        model=None,
+        action=None,
     ) -> dict:
         """
         Construct the message to send to the notification component.
@@ -135,7 +140,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
             "hoofd_object": main_object_url,
             "resource": model._meta.model_name,
             "resource_url": data["url"],
-            "actie": self.action,
+            "actie": action if action else self.action,
             "aanmaakdatum": timezone.now(),
             # each channel knows which kenmerken it has, so delegate this
             "kenmerken": kanaal.get_kenmerken(
