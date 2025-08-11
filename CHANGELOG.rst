@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.8.2 (2025-08-11)
+------------------
+
+**Maintenance**
+
+* Make notification action changeable in construct_message
+* [open-api-framework#172] Upgrade zgw-consumers to 1.0.0
+
 0.8.1 (2025-07-18)
 ------------------
 
