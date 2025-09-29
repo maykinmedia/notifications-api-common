@@ -94,4 +94,4 @@ def get_site_domain() -> str:
     ``NOTIFICATIONS_API_GET_DOMAIN`` setting, which takes a dotted path to a
     callable taking no arguments.
     """
-    return settings.SITE_DOMAIN
+    return get_setting("SITE_DOMAIN") or ""
