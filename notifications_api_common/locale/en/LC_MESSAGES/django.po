@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.8.2\n"
+"Project-Id-Version: 0.9.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-08 04:08-0500\n"
+"POT-Creation-Date: 2025-10-06 04:38-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -115,11 +115,11 @@ msgstr ""
 msgid "Notifications API integration"
 msgstr "Notifications API integration"
 
-#: models.py:20
+#: models.py:22
 msgid "notifications api service"
 msgstr "notifications api service"
 
-#: models.py:27
+#: models.py:29
 msgid ""
 "The maximum number of automatic retries. After this amount of retries, "
 "guaranteed delivery stops trying to deliver the message."
@@ -127,7 +127,7 @@ msgstr ""
 "The maximum number of automatic retries. After this amount of retries, "
 "guaranteed delivery stops trying to deliver the message."
 
-#: models.py:34
+#: models.py:36
 msgid ""
 "If specified, a factor applied to the exponential backoff. This allows you "
 "to tune how quickly automatic retries are performed."
@@ -135,11 +135,11 @@ msgstr ""
 "If specified, a factor applied to the exponential backoff. This allows you "
 "to tune how quickly automatic retries are performed."
 
-#: models.py:40
+#: models.py:42
 msgid "An upper limit in seconds to the exponential backoff time."
 msgstr "An upper limit in seconds to the exponential backoff time."
 
-#: models.py:45
+#: models.py:47
 msgid ""
 "The base factor used for exponential backoff. This can be increased or "
 "decreased to spread retries over a longer or shorter time period."
@@ -147,68 +147,76 @@ msgstr ""
 "The base factor used for exponential backoff. This can be increased or "
 "decreased to spread retries over a longer or shorter time period."
 
-#: models.py:54
+#: models.py:56
 msgid "Notificatiescomponentconfiguratie"
 msgstr "Notifications component configuration"
 
-#: models.py:60
+#: models.py:62
 msgid "no service configured"
 msgstr "no service configured"
 
-#: models.py:62
+#: models.py:64
 #, python-brace-format
 msgid "Notifications API configuration ({api_root})"
 msgstr "Notifications API configuration ({api_root})"
 
-#: models.py:91
+#: models.py:74
+msgid ""
+"The SITE_DOMAIN environment variable must be set before saving "
+"NotificationsConfig."
+msgstr ""
+"The SITE_DOMAIN environment variable must be set before saving "
+"NotificationsConfig."
+
+#: models.py:104
 msgid "A human-friendly identifier to refer to this subscription."
 msgstr ""
 
-#: models.py:94
+#: models.py:107
 msgid "callback url"
 msgstr "callback url"
 
-#: models.py:94
+#: models.py:107
 msgid "Where to send the notifications (webhook url)"
 msgstr "Where to send the notifications (webhook url)"
 
-#: models.py:97
+#: models.py:110
 msgid "client ID"
 msgstr "client ID"
 
-#: models.py:99
+#: models.py:112
 msgid "Client ID to construct the auth token"
 msgstr "Client ID to construct the auth token"
 
-#: models.py:102
+#: models.py:115
 msgid "client secret"
 msgstr "client secret"
 
-#: models.py:104
+#: models.py:117
 msgid "Secret to construct the auth token"
 msgstr "Secret to construct the auth token"
 
-#: models.py:108
+#: models.py:121
 msgid "channels"
 msgstr "channels"
 
-#: models.py:109
+#: models.py:122
 msgid "Comma-separated list of channels to subscribe to"
 msgstr "Comma-separated list of channels to subscribe to"
 
-#: models.py:113
+#: models.py:126
 msgid "NC subscription"
 msgstr "Notifications API subscription"
 
-#: models.py:116
+#: models.py:129
 msgid "Subscription as it is known in the NC"
 msgstr "Subscription as it is known in the Notifications API"
 
-#: models.py:120
+#: models.py:133
 msgid "Webhook subscription"
 msgstr "Webhook subscription"
 
-#: models.py:121
+#: models.py:134
 msgid "Webhook subscriptions"
 msgstr "Webhook subscriptions"
 

@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.9.0 (2025-10-06)
+------------------
+
+**New features**
+
+* [maykinmedia/open-klant#489] Validate that the ``SITE_DOMAIN`` setting has a value when
+  attempting to save the ``NotificationsConfig``
+
 0.8.2 (2025-08-11)
 ------------------
 
