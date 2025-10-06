@@ -1,6 +1,7 @@
 from typing import Optional
 
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -11,6 +12,7 @@ from zgw_consumers.constants import APITypes
 from zgw_consumers.models import Service
 
 from .query import NotificationsConfigManager
+from .utils import get_domain
 
 
 class NotificationsConfig(SingletonModel):
@@ -62,6 +64,17 @@ class NotificationsConfig(SingletonModel):
         return _("Notifications API configuration ({api_root})").format(
             api_root=api_root
         )
+
+    def clean(self):
+        super().clean()
+        site_domain = get_domain()
+        if not site_domain.strip():
+            raise ValidationError(
+                _(
+                    "The SITE_DOMAIN environment variable must be set before "
+                    "saving NotificationsConfig."
+                )
+            )
 
     @classmethod
     def get_client(cls) -> Optional[APIClient]:
