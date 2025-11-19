@@ -78,7 +78,7 @@ def send_cloudevent(self, message: dict) -> None:
             },
         )
 
-        raise NotificationException from exc
+        raise CloudEventException from exc
 
 
 add_autoretry_behaviour(

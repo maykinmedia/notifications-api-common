@@ -38,6 +38,7 @@ def test_api_create_person(api_client, notifications_config):
     mock_task.assert_called_once_with(
         {
             "kanaal": "personen",
+            "source": "test",
             "hoofdObject": f"http://testserver{person_url}",
             "resource": "person",
             "resourceUrl": f"http://testserver{person_url}",
