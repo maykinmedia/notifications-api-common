@@ -14,6 +14,13 @@ class NotificatieSerializer(serializers.Serializer):
             "op moet worden gepubliceerd."
         ),
     )
+    source = serializers.CharField(
+        label=_("source"),
+        max_length=100,
+        help_text=_(
+            "De identifier van de oorsprong van de notificatie, een systeem of organisatie."
+        ),
+    )
     hoofd_object = serializers.URLField(
         label=_("hoofd object"),
         help_text=_(
