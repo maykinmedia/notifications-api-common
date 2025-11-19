@@ -11,6 +11,8 @@ NOTIFICATIONS_GUARANTEE_DELIVERY = True
 
 NOTIFICATIONS_API_GET_DOMAIN = "notifications_api_common.utils.get_site_domain"
 
+NOTIFICATIONS_SOURCE = ""
+
 TIME_LEEWAY = 0
 
 

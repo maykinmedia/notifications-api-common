@@ -137,6 +137,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
 
         message_data = {
             "kanaal": kanaal.label,
+            "source": get_setting("NOTIFICATIONS_SOURCE"),
             "hoofd_object": main_object_url,
             "resource": model._meta.model_name,
             "resource_url": data["url"],
@@ -175,6 +176,13 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         self, status_code: int, data: Union[List, Dict], instance: models.Model = None
     ) -> None:
         if get_setting("NOTIFICATIONS_DISABLED"):
+            return
+
+        if not get_setting("NOTIFICATIONS_SOURCE"):
+            msg = "Not notifying, NOTIFICATIONS_SOURCE is not set."
+            logger.warning(msg)
+            if get_setting("NOTIFICATIONS_GUARANTEE_DELIVERY"):
+                raise RuntimeError(msg)
             return
 
         # do nothing unless we have a 'success' status code - early exit here
