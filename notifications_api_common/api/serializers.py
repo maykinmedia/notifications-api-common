@@ -20,6 +20,7 @@ class NotificatieSerializer(serializers.Serializer):
         help_text=_(
             "De identifier van de oorsprong van de notificatie, een systeem of organisatie."
         ),
+        required=False,
     )
     hoofd_object = serializers.URLField(
         label=_("hoofd object"),

@@ -137,7 +137,6 @@ class NotificationMixin(metaclass=NotificationMixinBase):
 
         message_data = {
             "kanaal": kanaal.label,
-            "source": get_setting("NOTIFICATIONS_SOURCE"),
             "hoofd_object": main_object_url,
             "resource": model._meta.model_name,
             "resource_url": data["url"],
@@ -148,6 +147,9 @@ class NotificationMixin(metaclass=NotificationMixinBase):
                 main_object, main_object_data, request=getattr(self, "request", None)
             ),
         }
+
+        if source := get_setting("NOTIFICATIONS_SOURCE"):
+            message_data["source"] = source
 
         # let the serializer & render machinery shape the data the way it
         # should be, suitable for JSON in/output
@@ -181,9 +183,6 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         if not get_setting("NOTIFICATIONS_SOURCE"):
             msg = "Not notifying, NOTIFICATIONS_SOURCE is not set."
             logger.warning(msg)
-            if get_setting("NOTIFICATIONS_GUARANTEE_DELIVERY"):
-                raise RuntimeError(msg)
-            return
 
         # do nothing unless we have a 'success' status code - early exit here
         if not 200 <= status_code < 300:
