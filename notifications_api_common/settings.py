@@ -13,6 +13,8 @@ NOTIFICATIONS_API_GET_DOMAIN = "notifications_api_common.utils.get_site_domain"
 
 NOTIFICATIONS_SOURCE = ""
 
+CLOUDEVENT_SPECVERSION = "1.0"
+
 TIME_LEEWAY = 0
 
 
