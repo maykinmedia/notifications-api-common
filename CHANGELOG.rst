@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.10.0 (2025-11-25)
+-------------------
+
+**New features**
+
+* [#61] Add optional source field to NotificatieSerializer
+* [#61] Add send_cloudevent task & utils for creating cloudevents
+
 0.9.0 (2025-10-06)
 ------------------
 
