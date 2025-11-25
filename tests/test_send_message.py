@@ -18,6 +18,7 @@ TESTS_DIR = Path(__file__).parent
 
 @freeze_time("2022-01-01")
 @pytest.mark.django_db(transaction=True)
+@override_settings(NOTIFICATIONS_SOURCE="test")
 def test_api_create_person(api_client, notifications_config):
     url = reverse("person-list")
     data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
@@ -38,6 +39,7 @@ def test_api_create_person(api_client, notifications_config):
     mock_task.assert_called_once_with(
         {
             "kanaal": "personen",
+            "source": "test",
             "hoofdObject": f"http://testserver{person_url}",
             "resource": "person",
             "resourceUrl": f"http://testserver{person_url}",

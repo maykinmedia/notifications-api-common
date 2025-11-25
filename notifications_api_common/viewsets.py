@@ -148,6 +148,9 @@ class NotificationMixin(metaclass=NotificationMixinBase):
             ),
         }
 
+        if source := get_setting("NOTIFICATIONS_SOURCE"):
+            message_data["source"] = source
+
         # let the serializer & render machinery shape the data the way it
         # should be, suitable for JSON in/output
         serializer = NotificatieSerializer(instance=message_data)
@@ -176,6 +179,10 @@ class NotificationMixin(metaclass=NotificationMixinBase):
     ) -> None:
         if get_setting("NOTIFICATIONS_DISABLED"):
             return
+
+        if not get_setting("NOTIFICATIONS_SOURCE"):
+            msg = "NOTIFICATIONS_SOURCE is not set."
+            logger.warning(msg)
 
         # do nothing unless we have a 'success' status code - early exit here
         if not 200 <= status_code < 300:
