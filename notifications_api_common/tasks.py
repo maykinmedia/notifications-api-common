@@ -61,8 +61,12 @@ def send_cloudevent(self, message: dict) -> None:
         )
         return
 
+    headers = {
+        "Content-Type": "application/cloudevents+json",
+    }
+
     try:
-        response = client.post("cloudevents", json=message)
+        response = client.post("cloudevents", json=message, headers=headers)
         response.raise_for_status()
     # any unexpected errors should show up in error-monitoring, so we only
     # catch HTTPError exceptions
