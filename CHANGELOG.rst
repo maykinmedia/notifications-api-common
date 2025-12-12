@@ -2,6 +2,12 @@
 Changelog
 =========
 
+0.10.1 (2025-12-12)
+-------------------
+
+* [#64] Ensure that CloudEvents are sent using the
+  ``Content-Type: application/cloudevents+json`` header.
+
 0.10.0 (2025-11-25)
 -------------------
 
