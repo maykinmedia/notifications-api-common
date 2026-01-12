@@ -1,5 +1,4 @@
-import logging
-
+import structlog
 from django_setup_configuration.configuration import BaseConfigurationStep
 from django_setup_configuration.exceptions import ConfigurationRunFailed
 from furl import furl
@@ -9,7 +8,7 @@ from notifications_api_common.models import NotificationsConfig, Subscription
 
 from .models import NotificationConfigurationModel, SubscriptionConfigurationModel
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def get_service(slug: str) -> Service:
@@ -102,8 +101,8 @@ class NotificationSubscriptionConfigurationStep(
             )
 
             logger.debug(
-                "%s subscription with identifier='%s' and pk='%s'",
-                "Created" if created else "Updated",
-                subscription.identifier,
-                subscription.pk,
+                "subscription_created_or_updated",
+                action="created" if created else "updated",
+                identifier=subscription.identifier,
+                pk=subscription.pk,
             )

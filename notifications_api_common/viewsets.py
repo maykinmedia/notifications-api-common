@@ -1,4 +1,3 @@
-import logging
 from contextlib import contextmanager
 from typing import Dict, List, Union
 from urllib.parse import urlparse
@@ -7,6 +6,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
 from django.utils import timezone
 
+import structlog
 from djangorestframework_camel_case.util import camelize
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.routers import SimpleRouter
@@ -18,7 +18,7 @@ from .settings import get_setting
 from .tasks import send_notification
 from .utils import get_resource_for_path, get_viewset_for_path
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @contextmanager
@@ -181,14 +181,14 @@ class NotificationMixin(metaclass=NotificationMixinBase):
             return
 
         if not get_setting("NOTIFICATIONS_SOURCE"):
-            msg = "NOTIFICATIONS_SOURCE is not set."
+            msg = "NOTIFICATIONS_SOURCE_is_not_set."
             logger.warning(msg)
 
         # do nothing unless we have a 'success' status code - early exit here
         if not 200 <= status_code < 300:
             logger.info(
-                "Not notifying, status code '%s' does not represent success.",
-                status_code,
+                "notification_skipped_non_success_status",
+                status_code=status_code,
             )
             return
 
@@ -197,10 +197,12 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # NOTIFICATIONS_GUARANTEE_DELIVERY is explicitly set to False
         client = NotificationsConfig.get_client()
         if client is None:
-            msg = "Not notifying, Notifications API configuration is broken or absent."
+            msg = "notifications_client_unavailable"
             logger.warning(msg)
             if get_setting("NOTIFICATIONS_GUARANTEE_DELIVERY"):
-                raise RuntimeError(msg)
+                raise RuntimeError(
+                    "Notifications API configuration is broken or absent."
+                )
             return
 
         self._message(data, instance)
