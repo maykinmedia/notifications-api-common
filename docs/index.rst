@@ -24,6 +24,7 @@ Features
 
    quickstart
    setup_config
+   logging
    changelog
 
 

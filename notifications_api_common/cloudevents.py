@@ -37,7 +37,7 @@ def process_cloudevent(
 ):
     if not get_setting("NOTIFICATIONS_SOURCE"):
         logger.warning(
-            "cloudevent_skipped_no_notification_source_set",
+            "no_notification_source_set",
         )
         return
 

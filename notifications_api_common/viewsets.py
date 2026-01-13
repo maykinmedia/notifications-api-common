@@ -181,8 +181,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
             return
 
         if not get_setting("NOTIFICATIONS_SOURCE"):
-            msg = "NOTIFICATIONS_SOURCE_is_not_set."
-            logger.warning(msg)
+            logger.warning("no_notification_source_set")
 
         # do nothing unless we have a 'success' status code - early exit here
         if not 200 <= status_code < 300:

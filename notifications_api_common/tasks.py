@@ -64,13 +64,12 @@ def send_cloudevent(self, message: dict) -> None:
     # any unexpected errors should show up in error-monitoring, so we only
     # catch HTTPError exceptions
     except requests.HTTPError as exc:
-        logger.warning(
+        logger.exception(
             "cloudevent_delivery_failed",
             base_url=client.base_url,
             cloudevent_msg=message,
             current_try=self.request.retries + 1,
             final_try=self.request.retries >= self.max_retries,
-            exc_info=exc,
         )
 
         raise CloudEventException from exc
