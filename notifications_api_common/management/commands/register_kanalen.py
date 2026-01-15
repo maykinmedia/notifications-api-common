@@ -1,9 +1,9 @@
-import logging
 from typing import Optional
 
 from django.core.management.base import BaseCommand, CommandError
 from django.urls import reverse
 
+import structlog
 from ape_pie.client import APIClient
 from requests import Response
 from requests.exceptions import JSONDecodeError, RequestException
@@ -13,7 +13,7 @@ from ...models import NotificationsConfig
 from ...settings import get_setting
 from ...utils import get_domain
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class KanaalException(Exception):
@@ -67,8 +67,9 @@ def get_kanaal(kanaal: str, client: APIClient) -> dict | None:
             # `Kanaal.naam` is unique in Open Notificaties, so there should only be one
             if len(kanalen) > 1:
                 logger.error(
-                    "Found more than one Kanaal with naam %s, this should not be possible",
-                    kanaal,
+                    "multiple_kanalen_found",
+                    kanaal=kanaal,
+                    count=len(kanalen),
                 )
             return kanalen[0]
         return None

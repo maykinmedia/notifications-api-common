@@ -1,12 +1,11 @@
-import logging
-
 import requests
+import structlog
 from celery import shared_task
 
 from .autoretry import add_autoretry_behaviour
 from .models import NotificationsConfig
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class NotificationException(Exception):
@@ -24,9 +23,7 @@ def send_notification(self, message: dict) -> None:
     """
     client = NotificationsConfig.get_client()
     if client is None:
-        logger.warning(
-            "Could not build a client for Notifications API, not sending messages"
-        )
+        logger.warning("notifications_client_unavailable")
         return
 
     try:
@@ -36,14 +33,12 @@ def send_notification(self, message: dict) -> None:
     # catch HTTPError exceptions
     except requests.HTTPError as exc:
         logger.warning(
-            "Could not deliver message to %s",
-            client.base_url,
+            "notification_delivery_failed",
+            base_url=client.base_url,
+            notification_msg=message,
+            current_try=self.request.retries + 1,
+            final_try=self.request.retries >= self.max_retries,
             exc_info=exc,
-            extra={
-                "notification_msg": message,
-                "current_try": self.request.retries + 1,
-                "final_try": self.request.retries >= self.max_retries,
-            },
         )
 
         raise NotificationException from exc
@@ -56,9 +51,7 @@ def send_cloudevent(self, message: dict) -> None:
     """
     client = NotificationsConfig.get_client()
     if client is None:
-        logger.warning(
-            "Could not build a client for Notifications API, not sending messages"
-        )
+        logger.warning("notifications_client_unavailable")
         return
 
     headers = {
@@ -71,15 +64,12 @@ def send_cloudevent(self, message: dict) -> None:
     # any unexpected errors should show up in error-monitoring, so we only
     # catch HTTPError exceptions
     except requests.HTTPError as exc:
-        logger.warning(
-            "Could not deliver message to %s",
-            client.base_url,
-            exc_info=exc,
-            extra={
-                "cloudevent_msg": message,
-                "current_try": self.request.retries + 1,
-                "final_try": self.request.retries >= self.max_retries,
-            },
+        logger.exception(
+            "cloudevent_delivery_failed",
+            base_url=client.base_url,
+            cloudevent_msg=message,
+            current_try=self.request.retries + 1,
+            final_try=self.request.retries >= self.max_retries,
         )
 
         raise CloudEventException from exc

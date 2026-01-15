@@ -1,12 +1,13 @@
-import logging
 import uuid
 
 from django.utils import timezone
 
+import structlog
+
 from notifications_api_common.settings import get_setting
 from notifications_api_common.tasks import send_cloudevent
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def construct_cloudevent(
@@ -35,8 +36,9 @@ def process_cloudevent(
     data: dict | None = None,
 ):
     if not get_setting("NOTIFICATIONS_SOURCE"):
-        msg = "Not notifying, NOTIFICATIONS_SOURCE is not set."
-        logger.warning(msg)
+        logger.warning(
+            "no_notification_source_set",
+        )
         return
 
     cloudevent = construct_cloudevent(type, subject, dataref, data)
