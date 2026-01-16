@@ -45,7 +45,7 @@ def send_notification(self, message: dict) -> None:
 
 
 @shared_task(bind=True)
-def send_cloudevent(self, message: dict) -> None:
+def send_cloudevent(self, cloudevent: dict) -> None:
     """
     send message to Notification API
     """
@@ -59,20 +59,29 @@ def send_cloudevent(self, message: dict) -> None:
     }
 
     try:
-        response = client.post("cloudevents", json=message, headers=headers)
+        response = client.post("cloudevents", json=cloudevent, headers=headers)
         response.raise_for_status()
     # any unexpected errors should show up in error-monitoring, so we only
     # catch HTTPError exceptions
     except requests.HTTPError as exc:
-        logger.exception(
-            "cloudevent_delivery_failed",
-            base_url=client.base_url,
-            cloudevent_msg=message,
-            current_try=self.request.retries + 1,
-            final_try=self.request.retries >= self.max_retries,
+        logger.warning(
+            "cloud_event_error",
+            exc_info=exc,
+            extra={
+                "notification_msg": cloudevent,
+                "current_try": self.request.retries + 1,
+                "final_try": self.request.retries >= self.max_retries,
+                "base_url": client.base_url,
+            },
         )
-
         raise CloudEventException from exc
+    else:
+        logger.info(
+            "cloud_event_sent",
+            type=cloudevent.get("type"),
+            subject=cloudevent.get("subject"),
+            status_code=response.status_code,
+        )
 
 
 add_autoretry_behaviour(
