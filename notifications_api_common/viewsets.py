@@ -108,10 +108,10 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         of the resource, so for sub-resources we can use this to get a
         reference back to the main resource.
         """
-        kanaal = kanaal if kanaal else self.get_kanaal()
+        kanaal = kanaal or self.get_kanaal()
         assert isinstance(kanaal, Kanaal), "`kanaal` should be a `Kanaal` instance"
 
-        model = model if model else self.get_queryset().model
+        model = model or self.get_queryset().model
 
         if model is kanaal.main_resource:
             # look up the object in the database from its absolute URL
@@ -140,7 +140,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
             "hoofd_object": main_object_url,
             "resource": model._meta.model_name,
             "resource_url": data["url"],
-            "actie": action if action else self.action,
+            "actie": action or self.action,
             "aanmaakdatum": timezone.now(),
             # each channel knows which kenmerken it has, so delegate this
             "kenmerken": kanaal.get_kenmerken(
