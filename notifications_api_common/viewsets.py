@@ -1,5 +1,16 @@
 from contextlib import contextmanager
-from typing import Dict, List, Union
+from typing import (
+    Any,
+    Callable,
+    ContextManager,
+    Dict,
+    Iterator,
+    List,
+    Protocol,
+    Union,
+    cast,
+    runtime_checkable,
+)
 from urllib.parse import urlparse
 
 from django.core.exceptions import ImproperlyConfigured
@@ -21,12 +32,24 @@ from .utils import get_resource_for_path, get_viewset_for_path
 logger = structlog.stdlib.get_logger(__name__)
 
 
+@runtime_checkable
+class ViewSetProtocol(Protocol):
+    request: Any
+    action: str
+
+    def get_queryset(self) -> models.QuerySet: ...
+    def get_object(self) -> models.Model: ...
+    def get_serializer(self, *args, **kwargs) -> Any: ...
+
+
 @contextmanager
-def _fake_atomic():
+def _fake_atomic() -> Iterator[None]:
     yield
 
 
-def conditional_atomic(wrap: bool = True):
+def conditional_atomic(
+    wrap: bool = True,
+) -> Callable[[], ContextManager[None]]:
     """
     Wrap either a fake or real atomic transaction context manager.
     """
@@ -42,11 +65,14 @@ class NotificationMixinBase(type):
             return new_cls
 
         relevant_bases = [base for base in bases if issubclass(base, NotificationMixin)]
-        resource = new_cls.queryset.model._meta.model_name
+        resource = cast(Any, new_cls).queryset.model._meta.model_name
         # use the router to figure out which actions are available
         router = SimpleRouter()
-        for route in router.get_routes(new_cls):
-            for method, action in route.mapping.items():
+        get_routes = cast(Callable[[type], List[Any]], router.get_routes)
+        for route in get_routes(new_cls):
+            mapping = cast(Dict[str, str], route.mapping)
+
+            for method, action in mapping.items():
                 if method.upper() in SAFE_METHODS:
                     continue
 
@@ -54,33 +80,35 @@ class NotificationMixinBase(type):
                 if not any(hasattr(base, action) for base in relevant_bases):
                     continue
 
-                kanaal.usage[resource].append(action)
+                usage_list = cast(List[str], kanaal.usage[resource])
+                usage_list.append(action)
 
         return new_cls
 
 
 class NotificationMixin(metaclass=NotificationMixinBase):
-    notifications_kanaal = None  # must be set be subclasses
-    notifications_main_resource_key = None
-    notifications_wrap_in_atomic_block = True
+    notifications_kanaal: Kanaal | None = None
+    notifications_main_resource_key: str | None = None
+    notifications_wrap_in_atomic_block: bool = True
 
-    def get_kanaal(self):
-        if not self.notifications_kanaal:
+    def get_kanaal(self) -> Kanaal:
+        kanaal = self.notifications_kanaal
+        if kanaal is None:
             raise ImproperlyConfigured(
                 "'%s' should either include a `notifications_kanaal` "
                 "attribute, or override the `get_kanaal()` method."
                 % self.__class__.__name__
             )
-        return self.notifications_kanaal
+        return kanaal
 
     def get_main_resource_key(self, kanaal: Kanaal) -> str:
         """
         Determine the key in the (response) data that represents the main resource.
         """
-        if self.notifications_main_resource_key:
-            return self.notifications_main_resource_key
-
-        return kanaal.main_resource._meta.model_name
+        key = self.notifications_main_resource_key
+        if key is not None:
+            return key
+        return str(kanaal.main_resource._meta.model_name)
 
     def get_notification_main_object_url(self, data: dict, kanaal: Kanaal) -> str:
         """
@@ -88,12 +116,16 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         """
         # using the main resource name, look up what the URL to this
         # object is/should be
-        return data[self.get_main_resource_key(kanaal)]
+        key = self.get_main_resource_key(kanaal)
+        value = data.get(key)
+        if not isinstance(value, str):
+            raise ValueError(f"Expected string for key '{key}', got {type(value)}")
+        return value
 
     def construct_message(
         self,
         data: dict,
-        instance: models.Model = None,
+        instance: models.Model | None = None,
         kanaal=None,
         model=None,
         action=None,
@@ -108,15 +140,18 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         of the resource, so for sub-resources we can use this to get a
         reference back to the main resource.
         """
+        this = cast(ViewSetProtocol, self)
+
         kanaal = kanaal or self.get_kanaal()
         assert isinstance(kanaal, Kanaal), "`kanaal` should be a `Kanaal` instance"
 
-        model = model or self.get_queryset().model
+        model = model or this.get_queryset().model
 
         if model is kanaal.main_resource:
             # look up the object in the database from its absolute URL
             resource_path = urlparse(data["url"]).path
             resource = instance or get_resource_for_path(resource_path)
+            assert resource is not None
 
             main_object = resource
             main_object_url = data["url"]
@@ -126,25 +161,28 @@ class NotificationMixin(metaclass=NotificationMixinBase):
             main_object_url = self.get_notification_main_object_url(data, kanaal)
             main_object_path = urlparse(main_object_url).path
             main_object = get_resource_for_path(main_object_path)
+            assert main_object is not None
 
             # get main_object data formatted by serializer
             view = get_viewset_for_path(main_object_path)
             serializer_class = view.get_serializer_class()
             serializer = serializer_class(
-                main_object, context={"request": self.request}
+                main_object, context={"request": this.request}
             )
             main_object_data = serializer.data
 
-        message_data = {
+        action_name = action or getattr(this, "action", "unknown")
+
+        message_data: Dict[str, Any] = {
             "kanaal": kanaal.label,
             "hoofd_object": main_object_url,
             "resource": model._meta.model_name,
             "resource_url": data["url"],
-            "actie": action or self.action,
+            "actie": str(action_name),
             "aanmaakdatum": timezone.now(),
             # each channel knows which kenmerken it has, so delegate this
             "kenmerken": kanaal.get_kenmerken(
-                main_object, main_object_data, request=getattr(self, "request", None)
+                main_object, main_object_data, request=getattr(this, "request", None)
             ),
         }
 
@@ -153,8 +191,8 @@ class NotificationMixin(metaclass=NotificationMixinBase):
 
         # let the serializer & render machinery shape the data the way it
         # should be, suitable for JSON in/output
-        serializer = NotificatieSerializer(instance=message_data)
-        return camelize(serializer.data)
+        serializer: Any = NotificatieSerializer(instance=message_data)
+        return cast(dict, camelize(serializer.data))
 
     def _message(self, data, instance=None):
         # build the content of the notification
@@ -170,12 +208,15 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # The 'send_notification' task is passed down to the task queue on transaction commit
 
         def _send():
-            send_notification.delay(message)
+            send_notification.delay(message)  # pyright: ignore
 
         transaction.on_commit(_send)
 
     def notify(
-        self, status_code: int, data: Union[List, Dict], instance: models.Model = None
+        self,
+        status_code: int,
+        data: Union[List, Dict],
+        instance: models.Model | None = None,
     ) -> None:
         if get_setting("NOTIFICATIONS_DISABLED"):
             return
@@ -186,8 +227,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # do nothing unless we have a 'success' status code - early exit here
         if not 200 <= status_code < 300:
             logger.info(
-                "notification_skipped_non_success_status",
-                status_code=status_code,
+                "notification_skipped_non_success_status", status_code=status_code
             )
             return
 
@@ -196,8 +236,6 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # NOTIFICATIONS_GUARANTEE_DELIVERY is explicitly set to False
         client = NotificationsConfig.get_client()
         if client is None:
-            msg = "notifications_client_unavailable"
-            logger.warning(msg)
             if get_setting("NOTIFICATIONS_GUARANTEE_DELIVERY"):
                 raise RuntimeError(
                     "Notifications API configuration is broken or absent."
@@ -210,7 +248,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
 class NotificationCreateMixin(NotificationMixin):
     def create(self, request, *args, **kwargs):
         with conditional_atomic(self.notifications_wrap_in_atomic_block)():
-            response = super().create(request, *args, **kwargs)
+            response = cast(Any, super()).create(request, *args, **kwargs)
             self.notify(response.status_code, response.data)
             return response
 
@@ -218,19 +256,20 @@ class NotificationCreateMixin(NotificationMixin):
 class NotificationUpdateMixin(NotificationMixin):
     def update(self, request, *args, **kwargs):
         with conditional_atomic(self.notifications_wrap_in_atomic_block)():
-            response = super().update(request, *args, **kwargs)
+            response = cast(Any, super()).update(request, *args, **kwargs)
             self.notify(response.status_code, response.data)
             return response
 
 
 class NotificationDestroyMixin(NotificationMixin):
     def destroy(self, request, *args, **kwargs):
+        this = cast(ViewSetProtocol, self)
         with conditional_atomic(self.notifications_wrap_in_atomic_block)():
             # get data via serializer
-            instance = self.get_object()
-            data = self.get_serializer(instance).data
+            instance = this.get_object()
+            data = this.get_serializer(instance).data
 
-            response = super().destroy(request, *args, **kwargs)
+            response = cast(Any, super()).destroy(request, *args, **kwargs)
             self.notify(response.status_code, data, instance=instance)
             return response
 

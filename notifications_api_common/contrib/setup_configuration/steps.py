@@ -86,7 +86,7 @@ class NotificationSubscriptionConfigurationStep(
 
         for item in model.items:
             detail_url = furl(notifications_api.api_root)
-            detail_url.path /= f"/abonnement/{item.uuid!s}"
+            detail_url.path.add(f"abonnement/{item.uuid!s}")
             detail_url.path.normalize()
 
             subscription, created = Subscription.objects.update_or_create(

@@ -1,10 +1,12 @@
+from typing import Any, cast
+
 from notifications_api_common.kanalen import Kanaal
 from notifications_api_common.utils import notification_documentation
 from testapp.models import Person
 
 
 def test_generate_docs():
-    kanaal = Kanaal(label="dummy", main_resource=Person, kenmerken=("name",))
+    kanaal = Kanaal(label="dummy", main_resource=cast(Any, Person), kenmerken=("name",))
 
     result = notification_documentation(kanaal)
 

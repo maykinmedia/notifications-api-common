@@ -7,14 +7,14 @@ from notifications_api_common.viewsets import NotificationMixin
 
 def mock_notify(*args, **kwargs) -> None:
     def _send():
-        NotificationMixin.send_notification(*args, **kwargs)
+        NotificationMixin.send_notification(*args, **kwargs)  # type: ignore[attr-defined]
 
     transaction.on_commit(_send)
 
 
 def mock_notify_async(*args, **kwargs) -> None:
     def _send():
-        NotificationMixin.send_notification(*args, **kwargs)
+        NotificationMixin.send_notification(*args, **kwargs)  # type: ignore[attr-defined]
 
     thread = Thread(target=_send)
     thread.start()
