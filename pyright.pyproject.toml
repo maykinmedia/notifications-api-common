@@ -1,0 +1,9 @@
+[tool.pyright]
+include = ["notifications_api_common"]
+exclude = ["build", ".tox", "**/__pycache__"]
+
+pythonVersion = "3.12"
+pythonPlatform = "Linux"
+typeCheckingMode = "basic"
+
+reportUnnecessaryTypeIgnoreComment = "error"

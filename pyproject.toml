@@ -64,6 +64,11 @@ tests = [
     "ruff",
     "zgw-consumers[testutils]>=0.35.1"
 ]
+type-checking = [
+    "pyright",
+    "django-stubs",
+    "django-stubs-ext",
+]
 coverage = ["pytest-cov"]
 setup-configuration = [
     "django-setup-configuration>=0.7.0",
@@ -224,3 +229,9 @@ msg = "Use `structlog.stdlib.get_logger(__name__)` instead."
 
 [tool.ruff.format]
 line-ending = "lf"
+
+[tool.setuptools.package-data]
+notifications_api_common = ["py.typed"]
+
+[tool.django-stubs]
+django_settings_module = "testapp.settings"

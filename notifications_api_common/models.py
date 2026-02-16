@@ -52,7 +52,7 @@ class NotificationsConfig(SingletonModel):
 
     objects = NotificationsConfigManager()
 
-    class Meta:
+    class Meta(SingletonModel.Meta):
         verbose_name = _("Notificatiescomponentconfiguratie")
 
     def __str__(self):

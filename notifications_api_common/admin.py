@@ -12,6 +12,7 @@ class NotificationsConfigAdmin(SingletonModelAdmin):
     pass
 
 
+@admin.action(description=_("Register the webhooks"))
 def register_webhook(modeladmin, request, queryset):
     for sub in queryset:
         if sub._subscription:
@@ -27,9 +28,6 @@ def register_webhook(modeladmin, request, queryset):
                     "for {callback}: {exception}"
                 ).format(callback=sub.callback_url, exception=e),
             )
-
-
-register_webhook.short_description = _("Register the webhooks")  # noqa
 
 
 @admin.register(Subscription)
