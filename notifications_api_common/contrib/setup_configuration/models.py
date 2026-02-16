@@ -1,10 +1,16 @@
-from django_setup_configuration.models import ConfigurationModel, DjangoModelRef
+from django_setup_configuration.fields import DjangoModelRef
+from django_setup_configuration.models import ConfigurationModel
 from pydantic import UUID4, Field
 
 from notifications_api_common.models import NotificationsConfig, Subscription
 
 
 class NotificationConfigurationModel(ConfigurationModel):
+    notification_delivery_max_retries: int
+    notification_delivery_retry_backoff: int
+    notification_delivery_retry_backoff_max: int
+    notification_delivery_base_factor: int
+
     notifications_api_service_identifier: str = DjangoModelRef(
         NotificationsConfig,
         "notifications_api_service",
@@ -24,6 +30,11 @@ class NotificationConfigurationModel(ConfigurationModel):
 
 
 class SubscriptionConfigurationItem(ConfigurationModel):
+    identifier: str
+    callback_url: str
+    client_id: str
+    secret: str
+
     uuid: UUID4 = Field(
         description="The UUID for this subscription. Must match the UUID of the corresponding `Abonnement` in Open Notificaties.",
     )

@@ -1,7 +1,8 @@
 from io import StringIO
+from typing import Any, cast
 from unittest.mock import Mock
 
-from django.test.testcases import call_command
+from django.core.management import call_command
 
 import pytest
 from furl import furl
@@ -15,13 +16,22 @@ KANALEN_LIST_URL = (furl(NOTIFICATIONS_API_ROOT) / "kanaal").url
 
 @pytest.fixture
 def override_kanalen():
+    mock_model = Mock()
+    mock_model._meta.get_field.return_value = Mock()
+
     kanalen = set(
-        (
+        [
             Kanaal(
-                label="foobar", main_resource=Mock(), kenmerken=("kenmerk1", "kenmerk2")
+                label="foobar",
+                main_resource=cast(Any, mock_model),
+                kenmerken=("kenmerk1", "kenmerk2"),
             ),
-            Kanaal(label="boofar", main_resource=Mock(), kenmerken=("kenmerk1",)),
-        )
+            Kanaal(
+                label="boofar",
+                main_resource=cast(Any, mock_model),
+                kenmerken=("kenmerk1",),
+            ),
+        ]
     )
 
     KANAAL_REGISTRY.clear()

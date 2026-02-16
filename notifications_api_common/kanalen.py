@@ -3,7 +3,7 @@ Provide notifications kanaal/exchange classes.
 """
 
 from collections import defaultdict
-from typing import Dict, Literal, Tuple
+from typing import Any, Dict, Literal, Tuple, Type, cast
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db.models import Field, Model
@@ -17,7 +17,7 @@ class Kanaal:
     def __init__(
         self,
         label: str,
-        main_resource: Model,
+        main_resource: Type[Model],
         kenmerken: Tuple | None = None,
         extra_kwargs: dict[str, dict[Literal["help_text"], str]] | None = None,
     ):
@@ -33,8 +33,9 @@ class Kanaal:
             try:
                 self.get_field(self.main_resource, kenmerk)
             except FieldDoesNotExist as exc:
+                model_name = cast(Any, main_resource)._meta.model_name
                 raise ImproperlyConfigured(
-                    f"Kenmerk '{kenmerk}' does not exist on the model {main_resource}"
+                    f"Kenmerk '{kenmerk}' does not exist on the model {model_name}"
                 ) from exc
 
         KANAAL_REGISTRY.add(self)
@@ -48,11 +49,11 @@ class Kanaal:
         )
 
     @staticmethod
-    def get_field(model: Model, field_name: str) -> Field:
+    def get_field(model: Type[Model], field_name: str) -> Field:
         """
         Function to retrieve a field from a Model
         """
-        return model._meta.get_field(field_name)
+        return cast(Field, cast(Any, model)._meta.get_field(field_name))
 
     def get_help_text(self, field: Field, kenmerk: str) -> str:
         """
@@ -61,7 +62,7 @@ class Kanaal:
         """
         if help_text := self.extra_kwargs.get(kenmerk, {}).get("help_text"):
             return help_text
-        return field.help_text
+        return str(field.help_text)
 
     def get_kenmerken(
         self,
@@ -79,7 +80,7 @@ class Kanaal:
         return self.usage.items()
 
     @property
-    def description(self):
+    def description(self) -> str:
         kenmerk_template = "* `{kenmerk}`: {help_text}"
         kenmerken = [
             kenmerk_template.format(
@@ -91,11 +92,13 @@ class Kanaal:
             for kenmerk in self.kenmerken
         ]
 
-        description = (
-            "**Main resource**\n\n"
-            "`{options.model_name}`\n\n\n\n"
-            "**Kenmerken**\n\n"
-            "{kenmerken}"
-        ).format(options=self.main_resource._meta, kenmerken="\n".join(kenmerken))
+        options = cast(Any, self.main_resource)._meta
 
-        return description
+        kenmerken_str = "\n".join(kenmerken)
+
+        return (
+            "**Main resource**\n\n"
+            f"`{options.model_name}`\n\n\n\n"
+            "**Kenmerken**\n\n"
+            f"{kenmerken_str}"
+        )

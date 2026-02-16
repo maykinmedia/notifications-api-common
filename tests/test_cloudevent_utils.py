@@ -16,7 +16,7 @@ from notifications_api_common.cloudevents import (
 @pytest.mark.django_db()
 def test_construct_cloudevent(notifications_config, requests_mock):
     cloudevent = construct_cloudevent(
-        type="nl.overheid.zaken.zaak.create",
+        event_type="nl.overheid.zaken.zaak.create",
         subject="439755e0-baeb-47a2-82e5-8a5c49c2fbf9",
         data={"foo": "bar"},
     )
@@ -37,14 +37,14 @@ def test_construct_cloudevent(notifications_config, requests_mock):
 @pytest.mark.django_db()
 def test_process_cloudevent_no_source(notifications_config):
     process_cloudevent(
-        type="nl.overheid.zaken.zaak.create",
+        event_type="nl.overheid.zaken.zaak.create",
         subject="439755e0-baeb-47a2-82e5-8a5c49c2fbf9",
         data={"foo": "bar"},
     )
 
     with patch("notifications_api_common.tasks.send_cloudevent.delay") as mock_task:
         process_cloudevent(
-            type="nl.overheid.zaken.zaak.create",
+            event_type="nl.overheid.zaken.zaak.create",
             subject="439755e0-baeb-47a2-82e5-8a5c49c2fbf9",
             data={"foo": "bar"},
         )
@@ -57,7 +57,7 @@ def test_process_cloudevent_no_source(notifications_config):
 def test_process_cloudevent_success(notifications_config):
     with patch("notifications_api_common.tasks.send_cloudevent.delay") as mock_task:
         process_cloudevent(
-            type="nl.overheid.zaken.zaak.create",
+            event_type="nl.overheid.zaken.zaak.create",
             subject="439755e0-baeb-47a2-82e5-8a5c49c2fbf9",
             data={"foo": "bar"},
         )
