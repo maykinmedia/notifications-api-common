@@ -29,8 +29,8 @@ Installation
 Requirements
 ------------
 
-* Python 3.10 or above
-* setuptools 30.3.0 or above
+* Python 3.11 or above
+* setuptools 77.0.0 or above
 * Django 4.2 or newer
 * Celery 5.0 or newer setup with one worker deployed
 
@@ -60,7 +60,7 @@ See the `documentation <https://notifications-api-common.readthedocs.io/>`_.
 .. |ruff| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
     :target: https://github.com/astral-sh/ruff
     :alt: Ruff
-    
+
 .. |coverage| image:: https://codecov.io/gh/maykinmedia/notifications-api-common/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/maykinmedia/notifications-api-common
     :alt: Coverage status
