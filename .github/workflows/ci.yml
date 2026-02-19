@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12']
-        django: ['4.2']
+        python: ['3.11', '3.12', '3.13']
+        django: ['5.2']
 
     name: Run the test suite (Python ${{ matrix.python }}, Django ${{ matrix.django }})
 
@@ -31,8 +31,12 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Install OS packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gettext
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
 
@@ -61,15 +65,20 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Install OS packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gettext
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
       - name: Build sdist and wheel
         run: |
-          pip install pip setuptools wheel --upgrade
-          python setup.py sdist bdist_wheel
+          uv pip install --system build --upgrade
+          python -m build
+
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@v1.4.1
         with:

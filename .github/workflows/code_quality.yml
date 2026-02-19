@@ -6,29 +6,33 @@ on:
     branches:
       - main
     tags:
-    paths:
-      - '**.py'
+      - '*'
   pull_request:
-    paths:
-      - '**.py'
   workflow_dispatch:
 
 jobs:
   linting:
     name: Code-quality checks
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         toxenv:
           - ruff
           - docs
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Install OS packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gettext
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Install dependencies
         run: pip install tox
-      - run: tox
+      - run: tox --colored=yes
         env:
           TOXENV: ${{ matrix.toxenv }}
+          FORCE_COLOR: '1'
