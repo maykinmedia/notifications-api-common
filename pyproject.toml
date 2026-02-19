@@ -1,28 +1,124 @@
 [build-system]
-requires = ["setuptools >= 30.3.0"]  # version supporting setup.cfg]
+requires = ["setuptools>=77.0.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "notifications-api-common"
+version = "0.10.1"
+description = "Re-usable integration layer for the Common Ground Notifications API specification."
+authors = [
+    {name = "Maykin Media", email = "support@maykinmedia.nl"}
+]
+readme = "README.rst"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["notifications", "REST", "API", "Common Ground", "ZGW"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Intended Audience :: Developers",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.12"
+dependencies = [
+    "django>=4.2.0",
+    "django-solo",
+    "djangorestframework>=3.12.0",
+    "celery",
+    "djangorestframework_camel_case>=1.2.0",
+    "zgw-consumers>=1.0.0",
+    "ape-pie",
+    "structlog",
+]
+
+[project.urls]
+Homepage = "https://github.com/maykinmedia/notifications-api-common"
+Documentation = "https://notifications-api-common.readthedocs.io/en/stable/"
+"Bug Tracker" = "https://github.com/maykinmedia/notifications-api-common/issues"
+"Source Code" = "https://github.com/maykinmedia/notifications-api-common"
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests*"]
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[project.optional-dependencies]
+db = ["psycopg2"]
+tests = [
+    "psycopg2",
+    "pytest",
+    "pytest-django",
+    "freezegun",
+    "tox",
+    "ruff",
+    "zgw-consumers[testutils]>=0.35.1"
+]
+coverage = ["pytest-cov"]
+setup-configuration = [
+    "django-setup-configuration>=0.7.0",
+    "furl"
+]
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme"
+]
+release = [
+    "bump-my-version",
+    "twine"
+]
+
+# Pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+DJANGO_SETTINGS_MODULE = "testapp.settings"
+
 
 # Bumpversion configuration
 
 [tool.bumpversion]
-commit = false
-tag = false
 current_version = "0.10.1"
+files = [
+    {filename = "pyproject.toml"},
+    {filename = "README.rst"},
+    {filename = "docs/conf.py"},
+    {filename = "notifications_api_common/__init__.py"},
+    {filename = "notifications_api_common/locale/en/LC_MESSAGES/django.po"},
+    {filename = "notifications_api_common/locale/nl/LC_MESSAGES/django.po"},
+]
 
-[[tool.bumpversion.files]]
-filename = "setup.cfg"
 
-[[tool.bumpversion.files]]
-filename = "README.rst"
+[tool.coverage.run]
+branch = true
+source = ["notifications_api_common"]
+patch = ["subprocess"]
+omit = [
+    # migrations run while django initializes the test db
+    "*/migrations/*",
+]
 
-[[tool.bumpversion.files]]
-filename = "docs/conf.py"
+[tool.coverage.report]
+skip_covered = true
+exclude_also = [
+    "if (typing\\.)?TYPE_CHECKING:",
+    "@(typing\\.)?overload",
+    "class .*\\(.*Protocol.*\\):",
+    "@(abc\\.)?abstractmethod",
+    "raise NotImplementedError",
+    "\\.\\.\\.",
+    "\\bpass$",
+]
 
-[[tool.bumpversion.files]]
-filename = "notifications_api_common/locale/en/LC_MESSAGES/django.po"
-
-[[tool.bumpversion.files]]
-filename = "notifications_api_common/locale/nl/LC_MESSAGES/django.po"
 
 [tool.ruff]
 # Exclude folders and files
