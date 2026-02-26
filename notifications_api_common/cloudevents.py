@@ -11,7 +11,7 @@ logger = structlog.stdlib.get_logger(__name__)
 
 
 def construct_cloudevent(
-    type: str,
+    event_type: str,
     subject: str | None = None,
     dataref: str | None = None,
     data: dict | None = None,
@@ -20,7 +20,7 @@ def construct_cloudevent(
         "id": str(uuid.uuid4()),
         "source": get_setting("NOTIFICATIONS_SOURCE"),
         "specversion": get_setting("CLOUDEVENT_SPECVERSION"),
-        "type": type,
+        "type": event_type,
         "subject": subject,
         "time": timezone.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
         "dataref": dataref,
@@ -30,7 +30,7 @@ def construct_cloudevent(
 
 
 def process_cloudevent(
-    type: str,
+    event_type: str,
     subject: str | None = None,
     dataref: str | None = None,
     data: dict | None = None,
@@ -41,5 +41,7 @@ def process_cloudevent(
         )
         return
 
-    cloudevent = construct_cloudevent(type, subject, dataref, data)
-    send_cloudevent.delay(cloudevent)
+    cloudevent = construct_cloudevent(
+        event_type=event_type, subject=subject, dataref=dataref, data=data
+    )
+    send_cloudevent.delay(cloudevent)  # pyright: ignore

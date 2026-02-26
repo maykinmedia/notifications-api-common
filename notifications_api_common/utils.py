@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.urls import Resolver404, ResolverMatch, get_resolver, get_script_prefix
 from django.utils.module_loading import import_string
 
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import GenericViewSet
 
 from .kanalen import Kanaal
 from .settings import get_setting
@@ -40,7 +40,7 @@ def resolve_path(path: str, resolver=None, script_prefix=None) -> ResolverMatch:
         raise models.ObjectDoesNotExist("URL did not resolve") from exc
 
 
-def get_viewset_for_path(path: str, method="GET") -> "ViewSet":
+def get_viewset_for_path(path: str, method="GET") -> GenericViewSet:
     """
     Look up which viewset matches a path.
     """
@@ -72,8 +72,9 @@ def get_resource_for_path(path: str) -> models.Model:
     viewset = get_viewset_for_path(path)
 
     # See rest_framework.mixins.RetieveModelMixin.get_object()
-    lookup_url_kwarg = viewset.lookup_url_kwarg or viewset.lookup_field
-    filter_kwargs = {viewset.lookup_field: viewset.kwargs[lookup_url_kwarg]}
+    lookup_field = getattr(viewset, "lookup_field", "pk")
+    lookup_url_kwarg = getattr(viewset, "lookup_url_kwarg", None) or lookup_field
+    filter_kwargs = {lookup_field: viewset.kwargs[lookup_url_kwarg]}
 
     return viewset.get_queryset().get(**filter_kwargs)
 
