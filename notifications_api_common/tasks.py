@@ -2,8 +2,15 @@ import requests
 import structlog
 from celery import shared_task
 
+from notifications_api_common.settings import get_setting
+
 from .autoretry import add_autoretry_behaviour
-from .models import NotificationsConfig
+from .models import (
+    Notification,
+    NotificationResponse,
+    NotificationsConfig,
+    NotificationTypes,
+)
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -17,20 +24,32 @@ class CloudEventException(Exception):
 
 
 @shared_task(bind=True)
-def send_notification(self, message: dict) -> None:
+def send_notification(self, message: dict, notification_id: int | None = None) -> None:
     """
     send message to Notification API
     """
+
+    if self.request.retries == 0:
+        if notification_id:
+            self.notification = Notification.objects.get(id=notification_id)
+        elif get_setting("LOG_NOTIFICATIONS_IN_DB"):
+            self.notification = Notification.objects.create(
+                message=message,
+                type=NotificationTypes.notification,
+            )
+
     client = NotificationsConfig.get_client()
     if client is None:
         logger.warning("notifications_client_unavailable")
         return
 
+    response_init_kwargs = {}
+    failed = False
+
     try:
         response = client.post("notificaties", json=message)
+        response_init_kwargs["response_status"] = response.status_code
         response.raise_for_status()
-    # any unexpected errors should show up in error-monitoring, so we only
-    # catch HTTPError exceptions
     except requests.HTTPError as exc:
         logger.warning(
             "notification_delivery_failed",
@@ -41,14 +60,47 @@ def send_notification(self, message: dict) -> None:
             exc_info=exc,
         )
 
+        response_init_kwargs["exception"] = response.text[:1000]
+        failed = True
+
         raise NotificationException from exc
+
+    except requests.RequestException as exc:
+        response_init_kwargs = {"exception": str(exc)}
+        failed = True
+        raise
+
+    finally:
+        if get_setting("LOG_NOTIFICATIONS_IN_DB"):
+            if failed:
+                NotificationResponse.objects.create(
+                    failed_notification=self.notification,
+                    attempt=self.request.retries + 1,
+                    **response_init_kwargs,
+                )
+
+            else:
+                if hasattr(self, "notification"):
+                    self.notification.delete()
+                elif notification_id:
+                    Notification.objects.get(id=notification_id).delete()
 
 
 @shared_task(bind=True)
-def send_cloudevent(self, message: dict) -> None:
+def send_cloudevent(self, message: dict, notification_id: int | None = None) -> None:
     """
     send message to Notification API
     """
+
+    if self.request.retries == 0:
+        if notification_id:
+            self.notification = Notification.objects.get(id=notification_id)
+        elif get_setting("LOG_NOTIFICATIONS_IN_DB"):
+            self.notification = Notification.objects.create(
+                message=message,
+                type=NotificationTypes.cloudevent,
+            )
+
     client = NotificationsConfig.get_client()
     if client is None:
         logger.warning("notifications_client_unavailable")
@@ -58,11 +110,13 @@ def send_cloudevent(self, message: dict) -> None:
         "Content-Type": "application/cloudevents+json",
     }
 
+    response_init_kwargs = {}
+    failed = False
+
     try:
         response = client.post("cloudevents", json=message, headers=headers)
+        response_init_kwargs["response_status"] = response.status_code
         response.raise_for_status()
-    # any unexpected errors should show up in error-monitoring, so we only
-    # catch HTTPError exceptions
     except requests.HTTPError as exc:
         logger.exception(
             "cloudevent_delivery_failed",
@@ -70,9 +124,33 @@ def send_cloudevent(self, message: dict) -> None:
             cloudevent_msg=message,
             current_try=self.request.retries + 1,
             final_try=self.request.retries >= self.max_retries,
+            exc_info=exc,
         )
 
+        response_init_kwargs["exception"] = response.text[:1000]
+        failed = True
+
         raise CloudEventException from exc
+
+    except requests.RequestException as exc:
+        response_init_kwargs = {"exception": str(exc)}
+        failed = True
+        raise
+
+    finally:
+        if get_setting("LOG_NOTIFICATIONS_IN_DB"):
+            if failed:
+                NotificationResponse.objects.create(
+                    failed_notification=self.notification,
+                    attempt=self.request.retries + 1,
+                    **response_init_kwargs,
+                )
+
+            else:
+                if hasattr(self, "notification"):
+                    self.notification.delete()
+                elif notification_id:
+                    Notification.objects.get(id=notification_id).delete()
 
 
 add_autoretry_behaviour(

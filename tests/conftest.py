@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 
@@ -7,6 +9,10 @@ from zgw_consumers.constants import APITypes
 from zgw_consumers.models import Service
 
 from notifications_api_common.models import NotificationsConfig
+from notifications_api_common.tasks import (
+    send_cloudevent,
+    send_notification,
+)
 from testapp import urls  # noqa
 
 NOTIFICATIONS_API_ROOT = "http://some-api-root/api/v1/"
@@ -41,3 +47,21 @@ def notifications_config():
 def api_client() -> APIClient:
     client = APIClient()
     return client
+
+
+@pytest.fixture
+def eager_send_notification():
+    with patch(
+        "notifications_api_common.tasks.send_notification.delay",
+        side_effect=lambda msg, nid=None: send_notification.apply(args=[msg, nid]),
+    ):
+        yield
+
+
+@pytest.fixture
+def eager_send_cloudevent():
+    with patch(
+        "notifications_api_common.tasks.send_cloudevent.delay",
+        side_effect=lambda msg, nid=None: send_cloudevent.apply(args=[msg, nid]),
+    ):
+        yield
