@@ -2,6 +2,7 @@ from typing import Optional
 
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -169,3 +170,29 @@ class Subscription(models.Model):
 
         self._subscription = subscriber["url"]
         self.save(update_fields=["_subscription"])
+
+
+class NotificationTypes(models.TextChoices):
+    notification = "demnotificationo", _("Notification")
+    cloudevent = "cloudevent", _("Cloudevent")
+
+
+class Notification(models.Model):
+    message = models.JSONField(encoder=DjangoJSONEncoder)
+    type = models.CharField(
+        choices=NotificationTypes, default=NotificationTypes.notification
+    )
+
+
+class NotificationResponse(models.Model):
+    failed_notification = models.ForeignKey(Notification, on_delete=models.CASCADE)
+    attempt = models.PositiveSmallIntegerField(
+        default=1,
+        verbose_name=_("attempt"),
+        help_text=_("Indicates to which delivery attempt this response belongs."),
+    )
+    exception = models.CharField(max_length=1000, blank=True)
+    response_status = models.IntegerField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.response_status or self.exception}"

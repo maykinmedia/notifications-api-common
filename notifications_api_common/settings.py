@@ -17,6 +17,10 @@ CLOUDEVENT_SPECVERSION = "1.0"
 
 TIME_LEEWAY = 0
 
+LOG_NOTIFICATIONS_IN_DB = False
+
+NOTIFICATION_NUMBER_OF_DAYS_RETAINED = 60
+
 
 def get_setting(name: str) -> Any:
     this_module = sys.modules[__name__]
