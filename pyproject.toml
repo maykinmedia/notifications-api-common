@@ -62,7 +62,8 @@ tests = [
     "freezegun",
     "tox",
     "ruff",
-    "zgw-consumers[testutils]>=0.35.1"
+    "zgw-consumers[testutils]>=0.35.1",
+    "requests-mock"
 ]
 type-checking = [
     "pyright",
