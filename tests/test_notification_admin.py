@@ -35,6 +35,7 @@ class NotificationAdminWebTest(WebTest):
         service = Service.objects.create(
             api_root="http://some-api-root/api/v1/",
             api_type=APITypes.nrc,
+            secret="secret",
         )
         config = NotificationsConfig.get_solo()
         config.notifications_api_service = service

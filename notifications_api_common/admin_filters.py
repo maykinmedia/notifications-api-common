@@ -3,9 +3,9 @@ from django.utils.translation import gettext_lazy as _
 
 
 class BaseFilter(admin.SimpleListFilter):
-    title = None
-    parameter_name = None
-    field_name = None
+    title: str
+    parameter_name: str
+    field_name: str
 
     def lookups(self, request, model_admin):
         qs = model_admin.get_queryset(request)
@@ -26,12 +26,12 @@ class BaseFilter(admin.SimpleListFilter):
 
 
 class ActionFilter(BaseFilter):
-    title = _("action")
+    title = _("action")  # pyright: ignore
     parameter_name = "actie"
     field_name = "message__actie"
 
 
 class ResourceFilter(BaseFilter):
-    title = _("resource")
+    title = _("resource")  # pyright: ignore
     parameter_name = "resource"
     field_name = "message__resource"

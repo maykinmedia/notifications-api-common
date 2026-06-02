@@ -54,9 +54,9 @@ def _send(notification: Notification):
     match notification.type:
         case NotificationTypes.notification:
             assert hasattr(send_notification, "_orig_run")
-            send_notification.delay(notification.message, notification.id)
+            send_notification.delay(notification.message, notification.id)  # pyright: ignore
         case NotificationTypes.cloudevent:
-            send_cloudevent.delay(notification.message, notification.id)
+            send_cloudevent.delay(notification.message, notification.id)  # pyright: ignore
 
 
 @admin.action(description=_("Re-send the selected notifications to all subscriptions"))
