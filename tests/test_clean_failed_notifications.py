@@ -39,7 +39,7 @@ def test_objects_are_deleted():
     assert Notification.objects.count() == 4
     assert NotificationResponse.objects.count() == 4
 
-    call_command("clean_old_notifications")
+    call_command("clean_failed_notifications")
 
     assert Notification.objects.count() == 2
     assert NotificationResponse.objects.count() == 2
@@ -60,7 +60,7 @@ def test_change_of_period():
     assert Notification.objects.count() == 4
     assert NotificationResponse.objects.count() == 4
 
-    call_command("clean_old_notifications")
+    call_command("clean_failed_notifications")
 
     assert Notification.objects.count() == 4
     assert NotificationResponse.objects.count() == 4
