@@ -1,6 +1,7 @@
 from django.test import override_settings
 
 import pytest
+import requests
 
 from notifications_api_common.models import (
     Notification,
@@ -44,6 +45,28 @@ def test_response_error_saves_notification(
 ):
     msg = {"foo": "bar"}
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", status_code=400)
+
+    send_notification.delay(msg)
+
+    assert Notification.objects.count() == 1
+    assert NotificationResponse.objects.count() == 6
+    assert NotificationResponse.objects.order_by("-attempt").first().attempt == 6
+
+
+@override_settings(
+    LOG_NOTIFICATIONS_IN_DB=True,
+)
+@pytest.mark.django_db()
+def test_response_exception_saves_notification(
+    notifications_config,
+    requests_mock,
+    settings,
+    eager_send_notification,
+):
+    msg = {"foo": "bar"}
+    requests_mock.post(
+        f"{NOTIFICATIONS_API_ROOT}notificaties", exc=requests.RequestException
+    )
 
     send_notification.delay(msg)
 

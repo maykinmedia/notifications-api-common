@@ -79,11 +79,8 @@ def send_notification(self, message: dict, notification_id: int | None = None) -
                     **response_init_kwargs,
                 )
 
-            else:
-                if hasattr(self, "notification"):
-                    self.notification.delete()
-                elif notification_id:
-                    Notification.objects.get(id=notification_id).delete()
+            elif hasattr(self, "notification"):
+                self.notification.delete()
 
 
 @shared_task(bind=True)
@@ -146,11 +143,8 @@ def send_cloudevent(self, message: dict, notification_id: int | None = None) -> 
                     **response_init_kwargs,
                 )
 
-            else:
-                if hasattr(self, "notification"):
-                    self.notification.delete()
-                elif notification_id:
-                    Notification.objects.get(id=notification_id).delete()
+            elif hasattr(self, "notification"):
+                self.notification.delete()
 
 
 add_autoretry_behaviour(
