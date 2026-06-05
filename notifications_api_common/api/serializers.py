@@ -51,15 +51,9 @@ class NotificatieSerializer(serializers.Serializer):
         validators=[UntilNowValidator()],
         help_text=_("Datum en tijd waarop de actie heeft plaatsgevonden."),
     )
-    kenmerken = serializers.DictField(
+    kenmerken = serializers.JSONField(
         label=_("kenmerken"),
         required=False,
-        child=serializers.CharField(
-            label=_("kenmerk"),
-            max_length=1000,
-            help_text=_("Een waarde behorende bij de sleutel."),
-            allow_blank=True,
-        ),
         help_text=_(
             "Mapping van kenmerken (sleutel/waarde) van de notificatie. De "
             "publicerende API specificeert de toegestane kenmerken."
