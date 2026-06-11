@@ -9,7 +9,6 @@ from .models import (
     Notification,
     NotificationResponse,
     NotificationsConfig,
-    NotificationTypes,
 )
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -27,16 +26,11 @@ class CloudEventException(Exception):
 def send_notification(self, message: dict, notification_id: int | None = None) -> None:
     """
     send message to Notification API
-    """
 
-    if self.request.retries == 0:
-        if notification_id:
-            self.notification = Notification.objects.get(id=notification_id)
-        elif get_setting("LOG_NOTIFICATIONS_IN_DB"):
-            self.notification = Notification.objects.create(
-                message=message,
-                type=NotificationTypes.notification,
-            )
+
+    Notifications are created before this task runs which means that if the request is successful the notification will be deleted immediately.
+    Could not find a way to create the notification withing the first try and fetch it again in the retries. (self is shared across all task calls)
+    """
 
     client = NotificationsConfig.get_client()
     if client is None:
@@ -74,13 +68,13 @@ def send_notification(self, message: dict, notification_id: int | None = None) -
         if get_setting("LOG_NOTIFICATIONS_IN_DB"):
             if failed:
                 NotificationResponse.objects.create(
-                    failed_notification=self.notification,
+                    failed_notification_id=notification_id,
                     attempt=self.request.retries + 1,
                     **response_init_kwargs,
                 )
 
-            elif hasattr(self, "notification"):
-                self.notification.delete()
+            else:
+                Notification.objects.get(pk=notification_id).delete()
 
 
 @shared_task(bind=True)
@@ -88,15 +82,6 @@ def send_cloudevent(self, message: dict, notification_id: int | None = None) -> 
     """
     send message to Notification API
     """
-
-    if self.request.retries == 0:
-        if notification_id:
-            self.notification = Notification.objects.get(id=notification_id)
-        elif get_setting("LOG_NOTIFICATIONS_IN_DB"):
-            self.notification = Notification.objects.create(
-                message=message,
-                type=NotificationTypes.cloudevent,
-            )
 
     client = NotificationsConfig.get_client()
     if client is None:
@@ -138,13 +123,13 @@ def send_cloudevent(self, message: dict, notification_id: int | None = None) -> 
         if get_setting("LOG_NOTIFICATIONS_IN_DB"):
             if failed:
                 NotificationResponse.objects.create(
-                    failed_notification=self.notification,
+                    failed_notification_id=notification_id,
                     attempt=self.request.retries + 1,
                     **response_init_kwargs,
                 )
 
-            elif hasattr(self, "notification"):
-                self.notification.delete()
+            else:
+                Notification.objects.get(pk=notification_id).delete()
 
 
 add_autoretry_behaviour(

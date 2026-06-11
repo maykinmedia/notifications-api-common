@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('message', models.JSONField(encoder=django.core.serializers.json.DjangoJSONEncoder)),
-                ('type', models.CharField(choices=[('demnotificationo', 'Notification'), ('cloudevent', 'Cloudevent')], default='demnotificationo')),
+                ('type', models.CharField(choices=[('notification', 'Notification'), ('cloudevent', 'Cloudevent')], default='demnotificationo')),
             ],
         ),
         migrations.CreateModel(

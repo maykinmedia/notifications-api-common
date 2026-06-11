@@ -1,5 +1,4 @@
 from django.contrib import admin, messages
-from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
 from requests.exceptions import RequestException
@@ -53,7 +52,7 @@ class NotificationResponseInline(admin.TabularInline):
 def _send(notification: Notification):
     match notification.type:
         case NotificationTypes.notification:
-            assert hasattr(send_notification, "_orig_run")
+            assert hasattr(send_notification, "_orig_run")  # TODO TEMP
             send_notification.delay(notification.message, notification.id)  # pyright: ignore
         case NotificationTypes.cloudevent:
             send_cloudevent.delay(notification.message, notification.id)  # pyright: ignore
@@ -61,8 +60,6 @@ def _send(notification: Notification):
 
 @admin.action(description=_("Re-send the selected notifications to all subscriptions"))
 def resend_notifications(modeladmin, request, queryset):
-    # Save all the selected notifications via the modeladmin, triggering
-    # the notification mechanism
     for notification in queryset:
         _send(notification)
 
@@ -88,8 +85,9 @@ class NotificationAdmin(admin.ModelAdmin):
     search_fields = ("message",)
 
     def get_queryset(self, request):
+        """Only show notifications with failed responses."""
         qs = super().get_queryset(request)
-        qs = qs.annotate(failed_responses_count=Count("notificationresponse"))
+        qs.filter(notificationresponse__isnull=False).distinct()
         return qs
 
     @admin.display(description=_("Action"))
