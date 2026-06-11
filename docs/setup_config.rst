@@ -1,3 +1,5 @@
+.. _setup_config:
+
 Setup configuration
 ===================
 
