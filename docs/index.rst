@@ -23,6 +23,7 @@ Features
    :caption: Contents:
 
    quickstart
+   delivery_guarantees
    setup_config
    logging
    changelog

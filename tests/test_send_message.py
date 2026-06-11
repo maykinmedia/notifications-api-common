@@ -46,7 +46,8 @@ def test_api_create_person(api_client, notifications_config):
             "actie": "create",
             "aanmaakdatum": "2022-01-01T00:00:00",
             "kenmerken": {"name": "John", "addressStreet": "Grotestraat"},
-        }
+        },
+        None,
     )
 
 

@@ -4,7 +4,16 @@ from django.utils.translation import gettext_lazy as _
 from requests.exceptions import RequestException
 from solo.admin import SingletonModelAdmin
 
-from .models import NotificationsConfig, Subscription
+from notifications_api_common.admin_filters import ActionFilter, ResourceFilter
+from notifications_api_common.tasks import send_cloudevent, send_notification
+
+from .models import (
+    Notification,
+    NotificationResponse,
+    NotificationsConfig,
+    NotificationTypes,
+    Subscription,
+)
 
 
 @admin.register(NotificationsConfig)
@@ -34,3 +43,68 @@ def register_webhook(modeladmin, request, queryset):
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ("identifier", "callback_url", "channels", "_subscription")
     actions = [register_webhook]
+
+
+class NotificationResponseInline(admin.TabularInline):
+    model = NotificationResponse
+
+
+def _send(notification: Notification):
+    match notification.type:
+        case NotificationTypes.notification:
+            assert hasattr(send_notification, "_orig_run")  # TODO TEMP
+            send_notification.delay(notification.message, notification.id)  # pyright: ignore
+        case NotificationTypes.cloudevent:
+            send_cloudevent.delay(notification.message, notification.id)  # pyright: ignore
+
+
+@admin.action(description=_("Re-send the selected notifications to all subscriptions"))
+def resend_notifications(modeladmin, request, queryset):
+    for notification in queryset:
+        _send(notification)
+
+    messages.add_message(
+        request, messages.SUCCESS, _("Selected notifications have been scheduled.")
+    )
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = (
+        "type",
+        "action",
+        "resource",
+    )
+    inlines = (NotificationResponseInline,)
+    actions = [resend_notifications]
+
+    list_filter = (
+        ActionFilter,
+        ResourceFilter,
+    )
+    search_fields = ("message",)
+
+    def get_queryset(self, request):
+        """Only show notifications with failed responses."""
+        qs = super().get_queryset(request)
+        qs.filter(notificationresponse__isnull=False).distinct()
+        return qs
+
+    @admin.display(description=_("Action"))
+    def action(self, obj):
+        return obj.message.get("actie")
+
+    @admin.display(description=_("Resource"))
+    def resource(self, obj):
+        return obj.message.get("resource")
+
+    def has_add_permission(self, request):
+        return False
+
+    def save_model(self, request, obj, form, change):
+        """
+        Given a model instance save it to the database.
+        """
+        super().save_model(request, obj, form, change)
+
+        _send(obj)
