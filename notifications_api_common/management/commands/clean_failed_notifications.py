@@ -23,12 +23,12 @@ class Command(BaseCommand):
 
         self.stdout.write(
             str(notifications_filtered[0])
-            + " notifications have been deleted : "
+            + " notifications & responses have been deleted : "
             + str(notifications_filtered[1])
         )
 
         self.stdout.write(
             str(cloudevents_filtered[0])
-            + " cloudevents have been deleted : "
+            + " cloudevents & responses have been deleted : "
             + str(cloudevents_filtered[1])
         )
