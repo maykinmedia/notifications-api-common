@@ -42,16 +42,11 @@ Add the following apps
 
 to your ``INSTALLED_APPS`` setting.
 
-Three additional settings are available:
+Thesee additional settings are available:
 
-* ``NOTIFICATIONS_DISABLED``: a boolean, default ``False``. Set to ``True`` to
-  completely disable the sending of notifications.
-* ``NOTIFICATIONS_GUARANTEE_DELIVERY``: a boolean, default ``True``. Set to ``False`` to
-  not raise a RuntimeError when the Notifications API is unconfigured.
-* ``IS_HTTPS``: a boolean, default ``True``. Set to ``False`` to indicate that
-  no HTTPS is being used.
-* ``NOTIFICATIONS_API_GET_DOMAIN``: a string, default ``notifications_api_common.utils.get_site_domain``.  
-  You can set a different dot path to specify which method should be used to get the domain.
+.. automodule:: notifications_api_common.settings
+    :members:
+    :undoc-members:
 
 
 Make sure to migrate your database:
