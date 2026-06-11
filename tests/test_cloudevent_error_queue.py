@@ -6,6 +6,7 @@ import requests
 from notifications_api_common.models import (
     Notification,
     NotificationResponse,
+    NotificationTypes,
 )
 from notifications_api_common.tasks import send_cloudevent
 
@@ -23,7 +24,7 @@ def test_response_error_with_logging_off_does_not_save_notification(
     msg = {"foo": "bar"}
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}cloudevents", status_code=400)
 
-    send_cloudevent.delay(msg)
+    send_cloudevent.delay(msg, None)
 
     last_request = requests_mock.request_history[-1]
     assert last_request.url == f"{NOTIFICATIONS_API_ROOT}cloudevents"
@@ -44,9 +45,11 @@ def test_response_error_saves_notification(
     eager_send_cloudevent,
 ):
     msg = {"foo": "bar"}
+    pk = Notification.objects.create(message=msg, type=NotificationTypes.cloudevent).pk
+
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}cloudevents", status_code=400)
 
-    send_cloudevent.delay(msg)
+    send_cloudevent.delay(msg, pk)
 
     assert Notification.objects.count() == 1
     assert NotificationResponse.objects.count() == 6
@@ -64,11 +67,13 @@ def test_response_exception_saves_notification(
     eager_send_cloudevent,
 ):
     msg = {"foo": "bar"}
+    pk = Notification.objects.create(message=msg, type=NotificationTypes.cloudevent).pk
+
     requests_mock.post(
         f"{NOTIFICATIONS_API_ROOT}cloudevents", exc=requests.RequestException
     )
 
-    send_cloudevent.delay(msg)
+    send_cloudevent.delay(msg, pk)
 
     assert Notification.objects.count() == 1
     assert NotificationResponse.objects.count() == 6
@@ -86,6 +91,8 @@ def test_notification_is_removed_when_request_is_successful_on_retry(
     eager_send_cloudevent,
 ):
     msg = {"foo": "bar"}
+    pk = Notification.objects.create(message=msg, type=NotificationTypes.cloudevent).pk
+
     requests_mock.post(
         f"{NOTIFICATIONS_API_ROOT}cloudevents",
         [
@@ -94,7 +101,7 @@ def test_notification_is_removed_when_request_is_successful_on_retry(
         ],
     )
 
-    send_cloudevent.delay(msg)
+    send_cloudevent.delay(msg, pk)
 
     assert Notification.objects.count() == 0
     assert NotificationResponse.objects.count() == 0
