@@ -6,6 +6,7 @@ import requests
 from notifications_api_common.models import (
     Notification,
     NotificationResponse,
+    NotificationTypes,
 )
 from notifications_api_common.tasks import send_notification
 
@@ -21,9 +22,10 @@ def test_response_error_with_logging_off_does_not_save_notification(
     eager_send_notification,
 ):
     msg = {"foo": "bar"}
+
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", status_code=400)
 
-    send_notification.delay(msg)
+    send_notification.delay(msg, None)
 
     last_request = requests_mock.request_history[-1]
     assert last_request.url == f"{NOTIFICATIONS_API_ROOT}notificaties"
@@ -44,9 +46,13 @@ def test_response_error_saves_notification(
     eager_send_notification,
 ):
     msg = {"foo": "bar"}
+    pk = Notification.objects.create(
+        message=msg, type=NotificationTypes.notification
+    ).pk
+
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}notificaties", status_code=400)
 
-    send_notification.delay(msg)
+    send_notification.delay(msg, pk)
 
     assert Notification.objects.count() == 1
     assert NotificationResponse.objects.count() == 6
@@ -64,11 +70,15 @@ def test_response_exception_saves_notification(
     eager_send_notification,
 ):
     msg = {"foo": "bar"}
+    pk = Notification.objects.create(
+        message=msg, type=NotificationTypes.notification
+    ).pk
+
     requests_mock.post(
         f"{NOTIFICATIONS_API_ROOT}notificaties", exc=requests.RequestException
     )
 
-    send_notification.delay(msg)
+    send_notification.delay(msg, pk)
 
     assert Notification.objects.count() == 1
     assert NotificationResponse.objects.count() == 6
@@ -86,6 +96,10 @@ def test_notification_is_removed_when_request_is_successful_on_retry(
     eager_send_notification,
 ):
     msg = {"foo": "bar"}
+    pk = Notification.objects.create(
+        message=msg, type=NotificationTypes.notification
+    ).pk
+
     requests_mock.post(
         f"{NOTIFICATIONS_API_ROOT}notificaties",
         [
@@ -94,7 +108,7 @@ def test_notification_is_removed_when_request_is_successful_on_retry(
         ],
     )
 
-    send_notification.delay(msg)
+    send_notification.delay(msg, pk)
 
     assert Notification.objects.count() == 0
     assert NotificationResponse.objects.count() == 0

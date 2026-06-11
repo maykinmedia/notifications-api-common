@@ -188,3 +188,32 @@ class NotificationAdminWebTest(WebTest):
 
         self.assertEqual(Notification.objects.count(), 1)
         self.assertEqual(NotificationResponse.objects.count(), 7)
+
+    def test_resend_cloudevent_fails(self):
+        msg = {"foo": "bar"}
+        notification = Notification.objects.create(
+            message=msg, type=NotificationTypes.cloudevent
+        )
+        NotificationResponse.objects.create(failed_notification=notification)
+
+        with requests_mock.mock() as m:
+            m.post("http://some-api-root/api/v1/cloudevents", status_code=400)
+
+            response = self.app.get(
+                reverse(
+                    "admin:notifications_api_common_notification_change",
+                    args=(notification.pk,),
+                ),
+                user=self.user,
+            )
+
+            form = response.forms["notification_form"]
+            response = form.submit()
+
+        self.assertEqual(m.call_count, 6)
+        self.assertEqual(m.last_request.path, "/api/v1/cloudevents")
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(Notification.objects.count(), 1)
+        self.assertEqual(NotificationResponse.objects.count(), 7)
