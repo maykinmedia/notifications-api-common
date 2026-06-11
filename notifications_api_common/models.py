@@ -173,7 +173,7 @@ class Subscription(models.Model):
 
 
 class NotificationTypes(models.TextChoices):
-    notification = "demnotificationo", _("Notification")
+    notification = "notification", _("Notification")
     cloudevent = "cloudevent", _("Cloudevent")
 
 

@@ -1,16 +1,16 @@
 from datetime import timedelta
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from notifications_api_common.models import Notification, NotificationTypes
+from notifications_api_common.settings import get_setting
 
 
 class Command(BaseCommand):
     def handle(self, **options):
         date_limit = timezone.now() - timedelta(
-            days=settings.NOTIFICATION_NUMBER_OF_DAYS_RETAINED
+            days=get_setting("NOTIFICATION_NUMBER_OF_DAYS_RETAINED")
         )
 
         notifications_filtered = Notification.objects.filter(
