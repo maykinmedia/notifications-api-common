@@ -9,6 +9,7 @@ from notifications_api_common.cloudevents import (
     construct_cloudevent,
     process_cloudevent,
 )
+from notifications_api_common.models import BaseNotification
 
 
 @freeze_time("2025-01-01")
@@ -63,3 +64,38 @@ def test_process_cloudevent_success(notifications_config):
         )
 
     mock_task.assert_called_once()
+
+
+@override_settings(
+    NOTIFICATIONS_SOURCE="openzaak.maykin.nl", LOG_NOTIFICATIONS_IN_DB=True
+)
+@pytest.mark.django_db(transaction=True)
+def test_process_cloudevent_logging_notification(notifications_config):
+    with patch("notifications_api_common.tasks.send_cloudevent.delay") as mock_task:
+        process_cloudevent(
+            event_type="nl.overheid.zaken.zaak.create",
+            subject="439755e0-baeb-47a2-82e5-8a5c49c2fbf9",
+            data={"foo": "bar"},
+        )
+
+    mock_task.assert_called_once()
+    assert BaseNotification.objects.count() == 1
+
+    cloudevent = BaseNotification.objects.get()
+    assert mock_task.call_args[0][1] == cloudevent.pk
+
+
+@override_settings(
+    NOTIFICATIONS_SOURCE="openzaak.maykin.nl", LOG_NOTIFICATIONS_IN_DB=False
+)
+@pytest.mark.django_db(transaction=True)
+def test_process_cloudevent_without_logging_notification(notifications_config):
+    with patch("notifications_api_common.tasks.send_cloudevent.delay") as mock_task:
+        process_cloudevent(
+            event_type="nl.overheid.zaken.zaak.create",
+            subject="439755e0-baeb-47a2-82e5-8a5c49c2fbf9",
+            data={"foo": "bar"},
+        )
+
+    mock_task.assert_called_once()
+    assert BaseNotification.objects.count() == 0
