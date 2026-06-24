@@ -5,7 +5,7 @@ from django.conf import settings
 
 NOTIFICATIONS_DISABLED = False
 """
-Enable or disable notifications
+Enable or disable sending of notifications/cloud events
 """
 
 IS_HTTPS = True
@@ -15,7 +15,7 @@ Indicate if HTTPS is used
 
 NOTIFICATIONS_GUARANTEE_DELIVERY = True
 """
-Whether to raise a RuntimeError when the Notifications API is unconfigured.
+Whether to raise a RuntimeError if the Notifications API is unconfigured when trying to send a notification/cloud event
 """
 
 NOTIFICATIONS_API_GET_DOMAIN = "notifications_api_common.utils.get_site_domain"
@@ -40,12 +40,12 @@ Time validation leeway in seconds
 
 LOG_NOTIFICATIONS_IN_DB = False
 """
-Indicates whether or not sent notifications should be saved to the database.
+Indicates whether or not failed notifications/cloud events should be saved to the database.
 """
 
 NOTIFICATION_NUMBER_OF_DAYS_RETAINED = 60
 """
-the number of days for which you wish to keep notifications
+the number of days for which you wish to keep failed notifications/cloud events in the database
 """
 
 

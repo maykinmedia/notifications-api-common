@@ -49,7 +49,7 @@ Delivering a message exactly once is not possible since the underlying infrastru
 Retry mechanism
 ~~~~~~~~~~~~~~~
 
-By default, sending notifications to Open Notificaties has automatic retry behaviour, i.e. if the notification
+By default, sending notifications to Open Notificaties has automatic retry behaviour, i.e. if the notification or cloudevent
 task has failed, it will automatically be rescheduled/tried again until the maximum
 retry limit has been reached.
 
@@ -99,7 +99,11 @@ automatically.
 
 LOG_NOTIFICATIONS_IN_DB
 ~~~~~~~~~~~~~~~~~~~~~~~
-When ``LOG_NOTIFICATIONS_IN_DB`` is set to ``True``, failed notifications are stored in the database with all their failed requests.
-From the admin they can be manually restarted. The Notification will be deleted on a successful request.
+When ``LOG_NOTIFICATIONS_IN_DB`` is set to ``True``, failed notifications and failed cloud events are stored in the database with all their failed requests.
+From the admin they can be manually re-sent. The Notification will be deleted on a successful request.
 
 With the command ``clean_failed_notifications`` all notifications older than ``NOTIFICATION_NUMBER_OF_DAYS_RETAINED`` (default 60 days) can be removed.
+
+.. code-block:: bash
+
+    python manage.py clean_failed_notifications
