@@ -6,7 +6,7 @@ from notifications_api_common.settings import get_setting
 
 from .autoretry import add_autoretry_behaviour
 from .models import (
-    Notification,
+    BaseNotification,
     NotificationResponse,
     NotificationsConfig,
 )
@@ -74,7 +74,7 @@ def send_notification(self, message: dict, notification_id: int | None = None) -
                 )
 
             else:
-                Notification.objects.get(pk=notification_id).delete()
+                BaseNotification.objects.get(pk=notification_id).delete()
 
 
 @shared_task(bind=True)
@@ -129,7 +129,7 @@ def send_cloudevent(self, message: dict, notification_id: int | None = None) -> 
                 )
 
             else:
-                Notification.objects.get(pk=notification_id).delete()
+                BaseNotification.objects.get(pk=notification_id).delete()
 
 
 add_autoretry_behaviour(

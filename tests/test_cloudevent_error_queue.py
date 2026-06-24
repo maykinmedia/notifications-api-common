@@ -4,7 +4,7 @@ import pytest
 import requests
 
 from notifications_api_common.models import (
-    Notification,
+    BaseNotification,
     NotificationResponse,
     NotificationTypes,
 )
@@ -31,7 +31,7 @@ def test_response_error_with_logging_off_does_not_save_notification(
     assert last_request.method == "POST"
     assert last_request.json() == msg
 
-    assert Notification.objects.count() == 0
+    assert BaseNotification.objects.count() == 0
 
 
 @override_settings(
@@ -45,13 +45,15 @@ def test_response_error_saves_notification(
     eager_send_cloudevent,
 ):
     msg = {"foo": "bar"}
-    pk = Notification.objects.create(message=msg, type=NotificationTypes.cloudevent).pk
+    pk = BaseNotification.objects.create(
+        message=msg, type=NotificationTypes.cloudevent
+    ).pk
 
     requests_mock.post(f"{NOTIFICATIONS_API_ROOT}cloudevents", status_code=400)
 
     send_cloudevent.delay(msg, pk)
 
-    assert Notification.objects.count() == 1
+    assert BaseNotification.objects.count() == 1
     assert NotificationResponse.objects.count() == 6
     assert NotificationResponse.objects.order_by("-attempt").first().attempt == 6
 
@@ -67,7 +69,9 @@ def test_response_exception_saves_notification(
     eager_send_cloudevent,
 ):
     msg = {"foo": "bar"}
-    pk = Notification.objects.create(message=msg, type=NotificationTypes.cloudevent).pk
+    pk = BaseNotification.objects.create(
+        message=msg, type=NotificationTypes.cloudevent
+    ).pk
 
     requests_mock.post(
         f"{NOTIFICATIONS_API_ROOT}cloudevents", exc=requests.RequestException
@@ -75,7 +79,7 @@ def test_response_exception_saves_notification(
 
     send_cloudevent.delay(msg, pk)
 
-    assert Notification.objects.count() == 1
+    assert BaseNotification.objects.count() == 1
     assert NotificationResponse.objects.count() == 6
     assert NotificationResponse.objects.order_by("-attempt").first().attempt == 6
 
@@ -91,7 +95,9 @@ def test_notification_is_removed_when_request_is_successful_on_retry(
     eager_send_cloudevent,
 ):
     msg = {"foo": "bar"}
-    pk = Notification.objects.create(message=msg, type=NotificationTypes.cloudevent).pk
+    pk = BaseNotification.objects.create(
+        message=msg, type=NotificationTypes.cloudevent
+    ).pk
 
     requests_mock.post(
         f"{NOTIFICATIONS_API_ROOT}cloudevents",
@@ -103,5 +109,5 @@ def test_notification_is_removed_when_request_is_successful_on_retry(
 
     send_cloudevent.delay(msg, pk)
 
-    assert Notification.objects.count() == 0
+    assert BaseNotification.objects.count() == 0
     assert NotificationResponse.objects.count() == 0

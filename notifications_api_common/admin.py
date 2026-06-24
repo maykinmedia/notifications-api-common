@@ -8,7 +8,7 @@ from notifications_api_common.admin_filters import ActionFilter, ResourceFilter
 from notifications_api_common.tasks import send_cloudevent, send_notification
 
 from .models import (
-    Notification,
+    BaseNotification,
     NotificationResponse,
     NotificationsConfig,
     NotificationTypes,
@@ -49,10 +49,9 @@ class NotificationResponseInline(admin.TabularInline):
     model = NotificationResponse
 
 
-def _send(notification: Notification):
+def _send(notification: BaseNotification):
     match notification.type:
         case NotificationTypes.notification:
-            assert hasattr(send_notification, "_orig_run")  # TODO TEMP
             send_notification.delay(notification.message, notification.id)  # pyright: ignore
         case NotificationTypes.cloudevent:
             send_cloudevent.delay(notification.message, notification.id)  # pyright: ignore
@@ -68,7 +67,7 @@ def resend_notifications(modeladmin, request, queryset):
     )
 
 
-@admin.register(Notification)
+@admin.register(BaseNotification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = (
         "type",
@@ -87,7 +86,7 @@ class NotificationAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         """Only show notifications with failed responses."""
         qs = super().get_queryset(request)
-        qs.filter(notificationresponse__isnull=False).distinct()
+        qs = qs.filter(notificationresponse__isnull=False).distinct()
         return qs
 
     @admin.display(description=_("Action"))
