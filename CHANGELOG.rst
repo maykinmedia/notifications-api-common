@@ -2,6 +2,22 @@
 Changelog
 =========
 
+0.11.0 (2026-07-02)
+-------------------
+
+**New features**
+
+* [#69] Add Pyright type checking to CI, added type hints to codebase
+* [#68] Migrate from setup.cfg to pyproject.toml. Drop Python 3.10 and Django 4.2,
+  set minimum versions to Python 3.11, Django 5.2 and Setuptools 77.0
+* [#43] Change default logging to Structlog
+
+**Maintenance**
+
+* [maykinmedia/open-api-framework#218] Add zizmor action to lint Github actions and apply CI hardening
+* Use trusted publishing to publish to PyPI
+
+
 0.10.1 (2025-12-12)
 -------------------
 

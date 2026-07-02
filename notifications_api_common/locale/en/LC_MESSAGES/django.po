@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.10.1\n"
+"Project-Id-Version: 0.11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-06 04:38-0500\n"
+"POT-Creation-Date: 2026-07-02 12:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:26
+#: admin.py:15
+msgid "Register the webhooks"
+msgstr "Register the webhooks"
+
+#: admin.py:27
 #, python-brace-format
 msgid ""
 "Something went wrong while registering subscription for {callback}: "
@@ -26,10 +30,6 @@ msgid ""
 msgstr ""
 "Something went wrong while registering subscription for {callback}: "
 "{exception}"
-
-#: admin.py:32
-msgid "Register the webhooks"
-msgstr "Register the webhooks"
 
 #: api/serializers.py:10
 msgid "kanaal"
@@ -44,10 +44,20 @@ msgstr ""
 "published."
 
 #: api/serializers.py:18
+msgid "source"
+msgstr "source"
+
+#: api/serializers.py:21
+msgid ""
+"De identifier van de oorsprong van de notificatie, een systeem of "
+"organisatie."
+msgstr "The identifier of the source of the notification, a system or organisation.""
+
+#: api/serializers.py:26
 msgid "hoofd object"
 msgstr "main object"
 
-#: api/serializers.py:20
+#: api/serializers.py:28
 msgid ""
 "URL-referentie naar het hoofd object van de publicerende API die betrekking "
 "heeft op de `resource`."
@@ -55,27 +65,27 @@ msgstr ""
 "URL reference to the main object of the publishing API related to the "
 "`resource`."
 
-#: api/serializers.py:25
+#: api/serializers.py:33
 msgid "resource"
 msgstr "resource"
 
-#: api/serializers.py:27
+#: api/serializers.py:35
 msgid "De resourcenaam waar de notificatie over gaat."
 msgstr "Name of the resource that the notification is about."
 
-#: api/serializers.py:30
+#: api/serializers.py:38
 msgid "resource URL"
 msgstr "resource URL"
 
-#: api/serializers.py:31
+#: api/serializers.py:39
 msgid "URL-referentie naar de `resource` van de publicerende API."
 msgstr "URL reference to the `resource` of the publishing API."
 
-#: api/serializers.py:34
+#: api/serializers.py:42
 msgid "actie"
 msgstr "action"
 
-#: api/serializers.py:37
+#: api/serializers.py:45
 msgid ""
 "De actie die door de publicerende API is gedaan. De publicerende API "
 "specificeert de toegestane acties."
@@ -83,27 +93,27 @@ msgstr ""
 "Action performed by the publishing API. The publishing API determines which "
 "action values are valid."
 
-#: api/serializers.py:42
+#: api/serializers.py:50
 msgid "aanmaakdatum"
 msgstr "creation date"
 
-#: api/serializers.py:44
+#: api/serializers.py:52
 msgid "Datum en tijd waarop de actie heeft plaatsgevonden."
 msgstr "Timestamp when the action occurred."
 
-#: api/serializers.py:47
+#: api/serializers.py:55
 msgid "kenmerken"
 msgstr "properties"
 
-#: api/serializers.py:50
+#: api/serializers.py:58
 msgid "kenmerk"
 msgstr "property"
 
-#: api/serializers.py:52
+#: api/serializers.py:60
 msgid "Een waarde behorende bij de sleutel."
 msgstr "A value belonging to the key."
 
-#: api/serializers.py:56
+#: api/serializers.py:64
 msgid ""
 "Mapping van kenmerken (sleutel/waarde) van de notificatie. De publicerende "
 "API specificeert de toegestane kenmerken."
@@ -220,6 +230,6 @@ msgstr "Webhook subscription"
 msgid "Webhook subscriptions"
 msgstr "Webhook subscriptions"
 
-#: validators.py:24
+#: validators.py:21
 msgid "Ensure this value is not in the future."
 msgstr "Ensure this value is not in the future."
