@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.db.models import Exists, OuterRef
 from django.utils.translation import gettext_lazy as _
 
 from requests.exceptions import RequestException
@@ -86,7 +87,13 @@ class NotificationAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         """Only show notifications with failed responses."""
         qs = super().get_queryset(request)
-        qs = qs.filter(notificationresponse__isnull=False).distinct()
+        qs = qs.filter(
+            Exists(
+                NotificationResponse.objects.filter(
+                    failed_notification_id=OuterRef("id")
+                )
+            )
+        )
         return qs
 
     @admin.display(description=_("Action"))

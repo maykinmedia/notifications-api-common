@@ -25,7 +25,7 @@ Dotpath of the function used to get the domain of the application
 
 NOTIFICATIONS_SOURCE = ""
 """
-The identifier of the application to use as the source in notifications and cloudevents",
+The identifier of the application to use as the source in notifications and cloudevents
 """
 
 CLOUDEVENT_SPECVERSION = "1.0"

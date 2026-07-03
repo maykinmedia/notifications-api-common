@@ -106,4 +106,4 @@ With the command ``clean_failed_notifications`` all notifications older than ``N
 
 .. code-block:: bash
 
-    python manage.py clean_failed_notifications
+    python src/manage.py clean_failed_notifications
