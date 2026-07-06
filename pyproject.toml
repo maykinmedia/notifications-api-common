@@ -63,7 +63,8 @@ tests = [
     "tox",
     "ruff",
     "zgw-consumers[testutils]>=0.35.1",
-    "requests-mock"
+    "requests-mock",
+    "django_webtest"
 ]
 type-checking = [
     "pyright",

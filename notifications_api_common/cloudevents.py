@@ -4,6 +4,7 @@ from django.utils import timezone
 
 import structlog
 
+from notifications_api_common.models import BaseNotification, NotificationTypes
 from notifications_api_common.settings import get_setting
 from notifications_api_common.tasks import send_cloudevent
 
@@ -44,4 +45,12 @@ def process_cloudevent(
     cloudevent = construct_cloudevent(
         event_type=event_type, subject=subject, dataref=dataref, data=data
     )
-    send_cloudevent.delay(cloudevent)  # pyright: ignore
+
+    if get_setting("LOG_NOTIFICATIONS_IN_DB"):
+        pk = BaseNotification.objects.create(
+            message=cloudevent,
+            type=NotificationTypes.cloudevent,
+        ).pk
+    else:
+        pk = None
+    send_cloudevent.delay(cloudevent, pk)  # pyright: ignore
