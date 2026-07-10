@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='BaseNotification',
+            name='FailedNotification',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('message', models.JSONField(encoder=django.core.serializers.json.DjangoJSONEncoder)),
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('attempt', models.PositiveSmallIntegerField(default=1, help_text='Indicates to which delivery attempt this response belongs.', verbose_name='attempt')),
                 ('exception', models.CharField(blank=True, max_length=1000)),
                 ('response_status', models.IntegerField(blank=True, null=True)),
-                ('failed_notification', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='notifications_api_common.basenotification')),
+                ('failed_notification', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='notifications_api_common.failednotification')),
             ],
         ),
     ]

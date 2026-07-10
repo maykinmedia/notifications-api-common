@@ -9,7 +9,7 @@ from notifications_api_common.cloudevents import (
     construct_cloudevent,
     process_cloudevent,
 )
-from notifications_api_common.models import BaseNotification
+from notifications_api_common.models import FailedNotification
 
 
 @freeze_time("2025-01-01")
@@ -79,9 +79,9 @@ def test_process_cloudevent_logging_notification(notifications_config):
         )
 
     mock_task.assert_called_once()
-    assert BaseNotification.objects.count() == 1
+    assert FailedNotification.objects.count() == 1
 
-    cloudevent = BaseNotification.objects.get()
+    cloudevent = FailedNotification.objects.get()
     assert mock_task.call_args[0][1] == cloudevent.pk
 
 
@@ -98,4 +98,4 @@ def test_process_cloudevent_without_logging_notification(notifications_config):
         )
 
     mock_task.assert_called_once()
-    assert BaseNotification.objects.count() == 0
+    assert FailedNotification.objects.count() == 0

@@ -24,7 +24,7 @@ from rest_framework.routers import SimpleRouter
 
 from .api.serializers import NotificatieSerializer
 from .kanalen import Kanaal
-from .models import BaseNotification, NotificationsConfig, NotificationTypes
+from .models import FailedNotification, NotificationsConfig, NotificationTypes
 from .settings import get_setting
 from .tasks import send_notification
 from .utils import get_resource_for_path, get_viewset_for_path
@@ -220,7 +220,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         def _send():
             pk = None
             if get_setting("LOG_NOTIFICATIONS_IN_DB"):
-                pk = BaseNotification.objects.create(
+                pk = FailedNotification.objects.create(
                     message=message,
                     type=NotificationTypes.notification,
                 ).pk

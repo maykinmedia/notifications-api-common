@@ -11,7 +11,7 @@ from zgw_consumers.constants import APITypes
 from zgw_consumers.models import Service
 
 from notifications_api_common.models import (
-    BaseNotification,
+    FailedNotification,
     NotificationResponse,
     NotificationsConfig,
     NotificationTypes,
@@ -23,7 +23,7 @@ from notifications_api_common.tasks import send_cloudevent, send_notification
 @override_settings(
     LOG_NOTIFICATIONS_IN_DB=True,
 )
-class NotificationAdminWebTest(WebTest):
+class FailedNotificationAdminWebTest(WebTest):
     maxdiff = None
 
     @classmethod
@@ -64,7 +64,7 @@ class NotificationAdminWebTest(WebTest):
 
     def test_resend_notification(self):
         msg = {"foo": "bar"}
-        notification = BaseNotification.objects.create(
+        notification = FailedNotification.objects.create(
             message=msg, type=NotificationTypes.notification
         )
         NotificationResponse.objects.create(failed_notification=notification)
@@ -74,13 +74,13 @@ class NotificationAdminWebTest(WebTest):
 
             response = self.app.get(
                 reverse(
-                    "admin:notifications_api_common_basenotification_change",
+                    "admin:notifications_api_common_failednotification_change",
                     args=(notification.pk,),
                 ),
                 user=self.user,
             )
 
-            form = response.forms["basenotification_form"]
+            form = response.forms["failednotification_form"]
             response = form.submit()
 
         self.assertEqual(m.call_count, 1)
@@ -88,12 +88,12 @@ class NotificationAdminWebTest(WebTest):
 
         self.assertEqual(response.status_code, 302)
 
-        self.assertEqual(BaseNotification.objects.count(), 0)
+        self.assertEqual(FailedNotification.objects.count(), 0)
         self.assertEqual(NotificationResponse.objects.count(), 0)
 
     def test_resend_cloudevent(self):
         msg = {"foo": "bar"}
-        notification = BaseNotification.objects.create(
+        notification = FailedNotification.objects.create(
             message=msg, type=NotificationTypes.cloudevent
         )
         NotificationResponse.objects.create(failed_notification=notification)
@@ -103,13 +103,13 @@ class NotificationAdminWebTest(WebTest):
 
             response = self.app.get(
                 reverse(
-                    "admin:notifications_api_common_basenotification_change",
+                    "admin:notifications_api_common_failednotification_change",
                     args=(notification.pk,),
                 ),
                 user=self.user,
             )
 
-            form = response.forms["basenotification_form"]
+            form = response.forms["failednotification_form"]
             response = form.submit()
 
         self.assertEqual(m.call_count, 1)
@@ -117,7 +117,7 @@ class NotificationAdminWebTest(WebTest):
 
         self.assertEqual(response.status_code, 302)
 
-        self.assertEqual(BaseNotification.objects.count(), 0)
+        self.assertEqual(FailedNotification.objects.count(), 0)
         self.assertEqual(NotificationResponse.objects.count(), 0)
 
     def test_resend_notification_action(self):
@@ -125,16 +125,16 @@ class NotificationAdminWebTest(WebTest):
         Verify that a notification is scheduled when it is saved via the admin
         """
         msg = {"foo": "bar"}
-        notification1 = BaseNotification.objects.create(
+        notification1 = FailedNotification.objects.create(
             message=msg, type=NotificationTypes.cloudevent
         )
         NotificationResponse.objects.create(failed_notification=notification1)
-        notification2 = BaseNotification.objects.create(
+        notification2 = FailedNotification.objects.create(
             message=msg, type=NotificationTypes.notification
         )
         NotificationResponse.objects.create(failed_notification=notification2)
 
-        notification3 = BaseNotification.objects.create(
+        notification3 = FailedNotification.objects.create(
             message=msg, type=NotificationTypes.notification
         )
         NotificationResponse.objects.create(failed_notification=notification3)
@@ -144,7 +144,7 @@ class NotificationAdminWebTest(WebTest):
             m.post("http://some-api-root/api/v1/cloudevents", status_code=201)
 
             response = self.app.get(
-                reverse("admin:notifications_api_common_basenotification_changelist"),
+                reverse("admin:notifications_api_common_failednotification_changelist"),
                 user=self.user,
             )
 
@@ -157,12 +157,12 @@ class NotificationAdminWebTest(WebTest):
         self.assertEqual(response.status_code, 302)
 
         self.assertEqual(m.call_count, 2)
-        self.assertEqual(BaseNotification.objects.count(), 1)
+        self.assertEqual(FailedNotification.objects.count(), 1)
         self.assertEqual(NotificationResponse.objects.count(), 1)
 
     def test_resend_notification_fails(self):
         msg = {"foo": "bar"}
-        notification = BaseNotification.objects.create(
+        notification = FailedNotification.objects.create(
             message=msg, type=NotificationTypes.notification
         )
         NotificationResponse.objects.create(failed_notification=notification)
@@ -172,13 +172,13 @@ class NotificationAdminWebTest(WebTest):
 
             response = self.app.get(
                 reverse(
-                    "admin:notifications_api_common_basenotification_change",
+                    "admin:notifications_api_common_failednotification_change",
                     args=(notification.pk,),
                 ),
                 user=self.user,
             )
 
-            form = response.forms["basenotification_form"]
+            form = response.forms["failednotification_form"]
             response = form.submit()
 
         self.assertEqual(m.call_count, 6)
@@ -186,12 +186,12 @@ class NotificationAdminWebTest(WebTest):
 
         self.assertEqual(response.status_code, 302)
 
-        self.assertEqual(BaseNotification.objects.count(), 1)
+        self.assertEqual(FailedNotification.objects.count(), 1)
         self.assertEqual(NotificationResponse.objects.count(), 7)
 
     def test_resend_cloudevent_fails(self):
         msg = {"foo": "bar"}
-        notification = BaseNotification.objects.create(
+        notification = FailedNotification.objects.create(
             message=msg, type=NotificationTypes.cloudevent
         )
         NotificationResponse.objects.create(failed_notification=notification)
@@ -201,13 +201,13 @@ class NotificationAdminWebTest(WebTest):
 
             response = self.app.get(
                 reverse(
-                    "admin:notifications_api_common_basenotification_change",
+                    "admin:notifications_api_common_failednotification_change",
                     args=(notification.pk,),
                 ),
                 user=self.user,
             )
 
-            form = response.forms["basenotification_form"]
+            form = response.forms["failednotification_form"]
             response = form.submit()
 
         self.assertEqual(m.call_count, 6)
@@ -215,5 +215,5 @@ class NotificationAdminWebTest(WebTest):
 
         self.assertEqual(response.status_code, 302)
 
-        self.assertEqual(BaseNotification.objects.count(), 1)
+        self.assertEqual(FailedNotification.objects.count(), 1)
         self.assertEqual(NotificationResponse.objects.count(), 7)

@@ -4,7 +4,7 @@ import pytest
 import requests
 
 from notifications_api_common.models import (
-    BaseNotification,
+    FailedNotification,
     NotificationResponse,
     NotificationTypes,
 )
@@ -31,7 +31,7 @@ def test_response_error_with_logging_off_does_not_save_notification(
     assert last_request.method == "POST"
     assert last_request.json() == msg
 
-    assert BaseNotification.objects.count() == 0
+    assert FailedNotification.objects.count() == 0
 
 
 @override_settings(
@@ -45,7 +45,7 @@ def test_response_error_saves_notification(
     eager_send_cloudevent,
 ):
     msg = {"foo": "bar"}
-    pk = BaseNotification.objects.create(
+    pk = FailedNotification.objects.create(
         message=msg, type=NotificationTypes.cloudevent
     ).pk
 
@@ -53,7 +53,7 @@ def test_response_error_saves_notification(
 
     send_cloudevent.delay(msg, pk)
 
-    assert BaseNotification.objects.count() == 1
+    assert FailedNotification.objects.count() == 1
     assert NotificationResponse.objects.count() == 6
     assert NotificationResponse.objects.order_by("-attempt").first().attempt == 6
 
@@ -69,7 +69,7 @@ def test_response_exception_saves_notification(
     eager_send_cloudevent,
 ):
     msg = {"foo": "bar"}
-    pk = BaseNotification.objects.create(
+    pk = FailedNotification.objects.create(
         message=msg, type=NotificationTypes.cloudevent
     ).pk
 
@@ -79,7 +79,7 @@ def test_response_exception_saves_notification(
 
     send_cloudevent.delay(msg, pk)
 
-    assert BaseNotification.objects.count() == 1
+    assert FailedNotification.objects.count() == 1
     assert NotificationResponse.objects.count() == 6
     assert NotificationResponse.objects.order_by("-attempt").first().attempt == 6
 
@@ -95,7 +95,7 @@ def test_notification_is_removed_when_request_is_successful_on_retry(
     eager_send_cloudevent,
 ):
     msg = {"foo": "bar"}
-    pk = BaseNotification.objects.create(
+    pk = FailedNotification.objects.create(
         message=msg, type=NotificationTypes.cloudevent
     ).pk
 
@@ -109,5 +109,5 @@ def test_notification_is_removed_when_request_is_successful_on_retry(
 
     send_cloudevent.delay(msg, pk)
 
-    assert BaseNotification.objects.count() == 0
+    assert FailedNotification.objects.count() == 0
     assert NotificationResponse.objects.count() == 0

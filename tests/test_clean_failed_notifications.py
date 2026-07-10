@@ -6,14 +6,14 @@ from django.test import override_settings
 import pytest
 
 from notifications_api_common.models import (
-    BaseNotification,
+    FailedNotification,
     NotificationResponse,
     NotificationTypes,
 )
 
 
 def _create_notif(type: NotificationTypes, date: str):
-    notif = BaseNotification.objects.create(
+    notif = FailedNotification.objects.create(
         message={
             "aanmaakdatum" if type == NotificationTypes.notification else "time": date
         },
@@ -36,10 +36,10 @@ def test_objects_are_deleted():
     _create_notif(NotificationTypes.cloudevent, in_month)
     _create_notif(NotificationTypes.cloudevent, out_month)
 
-    assert BaseNotification.objects.count() == 4
+    assert FailedNotification.objects.count() == 4
     assert NotificationResponse.objects.count() == 4
 
     call_command("clean_failed_notifications")
 
-    assert BaseNotification.objects.count() == 2
+    assert FailedNotification.objects.count() == 2
     assert NotificationResponse.objects.count() == 2
