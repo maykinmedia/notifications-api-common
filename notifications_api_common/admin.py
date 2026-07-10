@@ -9,7 +9,7 @@ from notifications_api_common.admin_filters import ActionFilter, ResourceFilter
 from notifications_api_common.tasks import send_cloudevent, send_notification
 
 from .models import (
-    BaseNotification,
+    FailedNotification,
     NotificationResponse,
     NotificationsConfig,
     NotificationTypes,
@@ -50,7 +50,7 @@ class NotificationResponseInline(admin.TabularInline):
     model = NotificationResponse
 
 
-def _send(notification: BaseNotification):
+def _send(notification: FailedNotification):
     match notification.type:
         case NotificationTypes.notification:
             send_notification.delay(notification.message, notification.id)  # pyright: ignore
@@ -68,8 +68,8 @@ def resend_notifications(modeladmin, request, queryset):
     )
 
 
-@admin.register(BaseNotification)
-class NotificationAdmin(admin.ModelAdmin):
+@admin.register(FailedNotification)
+class FailedNotificationAdmin(admin.ModelAdmin):
     list_display = (
         "type",
         "action",

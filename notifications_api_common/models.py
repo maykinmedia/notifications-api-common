@@ -177,7 +177,7 @@ class NotificationTypes(models.TextChoices):
     cloudevent = "cloudevent", _("Cloudevent")
 
 
-class BaseNotification(models.Model):
+class FailedNotification(models.Model):
     message = models.JSONField(encoder=DjangoJSONEncoder)
     type = models.CharField(
         choices=NotificationTypes, default=NotificationTypes.notification
@@ -185,7 +185,9 @@ class BaseNotification(models.Model):
 
 
 class NotificationResponse(models.Model):
-    failed_notification = models.ForeignKey(BaseNotification, on_delete=models.CASCADE)
+    failed_notification = models.ForeignKey(
+        FailedNotification, on_delete=models.CASCADE
+    )
     attempt = models.PositiveSmallIntegerField(
         default=1,
         verbose_name=_("attempt"),
