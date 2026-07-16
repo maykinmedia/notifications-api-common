@@ -2,6 +2,16 @@
 Changelog
 =========
 
+0.12.0 (2026-07-15)
+-------------------
+
+**New features**
+
+* [#757] Add notification error queue in the admin to show failed notifications to be retried
+* [#80] Rename error queue basenotification model to clean_failed_notification
+* [maykinmedia/open-klant#608] Change notificationserializer kenmerken dict field to json field
+
+
 0.11.0 (2026-07-02)
 -------------------
 
@@ -16,6 +26,8 @@ Changelog
 
 * [maykinmedia/open-api-framework#218] Add zizmor action to lint Github actions and apply CI hardening
 * Use trusted publishing to publish to PyPI
+* Fix publish ci job
+
 
 
 0.10.1 (2025-12-12)
