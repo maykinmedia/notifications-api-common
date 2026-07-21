@@ -9,6 +9,7 @@ from .models import (
     FailedNotification,
     NotificationResponse,
     NotificationsConfig,
+    NotificationTypes,
 )
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -20,6 +21,21 @@ class NotificationException(Exception):
 
 class CloudEventException(Exception):
     pass
+
+
+def create_failed_notification(message: dict, type: NotificationTypes) -> int | None:
+    """
+    Creates a notification based on settings.LOG_NOTIFICATIONS_IN_DB.
+    """
+
+    pk = None
+    if get_setting("LOG_NOTIFICATIONS_IN_DB"):
+        pk = FailedNotification.objects.create(
+            message=message,
+            type=type,
+        ).pk  # pyright: ignore
+
+    return pk
 
 
 @shared_task(bind=True)

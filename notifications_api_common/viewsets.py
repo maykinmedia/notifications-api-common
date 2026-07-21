@@ -24,9 +24,9 @@ from rest_framework.routers import SimpleRouter
 
 from .api.serializers import NotificatieSerializer
 from .kanalen import Kanaal
-from .models import FailedNotification, NotificationsConfig, NotificationTypes
+from .models import NotificationsConfig, NotificationTypes
 from .settings import get_setting
-from .tasks import send_notification
+from .tasks import create_failed_notification, send_notification
 from .utils import get_resource_for_path, get_viewset_for_path
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -218,14 +218,10 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         # The 'send_notification' task is passed down to the task queue on transaction commit
 
         def _send():
-            pk = None
-            if get_setting("LOG_NOTIFICATIONS_IN_DB"):
-                pk = FailedNotification.objects.create(
-                    message=message,
-                    type=NotificationTypes.notification,
-                ).pk
-
-            send_notification.delay(message, pk)  # pyright: ignore
+            send_notification.delay(
+                message,
+                create_failed_notification(message, NotificationTypes.notification),
+            )  # pyright: ignore
 
         transaction.on_commit(_send)
 

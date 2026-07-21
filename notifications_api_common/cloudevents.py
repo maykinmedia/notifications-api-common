@@ -4,9 +4,9 @@ from django.utils import timezone
 
 import structlog
 
-from notifications_api_common.models import FailedNotification, NotificationTypes
+from notifications_api_common.models import NotificationTypes
 from notifications_api_common.settings import get_setting
-from notifications_api_common.tasks import send_cloudevent
+from notifications_api_common.tasks import create_failed_notification, send_cloudevent
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -46,11 +46,6 @@ def process_cloudevent(
         event_type=event_type, subject=subject, dataref=dataref, data=data
     )
 
-    if get_setting("LOG_NOTIFICATIONS_IN_DB"):
-        pk = FailedNotification.objects.create(
-            message=cloudevent,
-            type=NotificationTypes.cloudevent,
-        ).pk
-    else:
-        pk = None
-    send_cloudevent.delay(cloudevent, pk)  # pyright: ignore
+    send_cloudevent.delay(
+        cloudevent, create_failed_notification(cloudevent, NotificationTypes.cloudevent)
+    )  # pyright: ignore
