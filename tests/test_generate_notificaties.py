@@ -29,7 +29,7 @@ De architectuur van de notificaties staat beschreven op <a href="https://github.
 **Kenmerken**
 
 * `name`: The name of the person
-* `address_street`: custom help text
+* `addressStreet`: custom help text
 
 **Resources en acties**
 

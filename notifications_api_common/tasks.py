@@ -33,8 +33,7 @@ def create_failed_notification(message: dict, type: NotificationTypes) -> int | 
         pk = FailedNotification.objects.create(
             message=message,
             type=type,
-        ).pk  # pyright: ignore
-
+        ).pk
     return pk
 
 
