@@ -48,6 +48,11 @@ NOTIFICATION_NUMBER_OF_DAYS_RETAINED = 60
 the number of days for which you wish to keep failed notifications/cloud events in the database
 """
 
+CAMELIZE_KANAAL_KENMERKEN = True
+"""
+Whether to camelize kanaal kenmerken within kanaal description
+"""
+
 
 def get_setting(name: str) -> Any:
     this_module = sys.modules[__name__]

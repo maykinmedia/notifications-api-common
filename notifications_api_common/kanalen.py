@@ -14,6 +14,8 @@ from djangorestframework_camel_case.util import (
 )
 from rest_framework.request import Request
 
+from notifications_api_common.settings import get_setting
+
 KANAAL_REGISTRY = set()
 
 RE_UNDERSCORE = re.compile(r"[a-z]_[a-z]")
@@ -107,7 +109,9 @@ class Kanaal:
         kenmerk_template = "* `{kenmerk}`: {help_text}"
         kenmerken = [
             kenmerk_template.format(
-                kenmerk=underscore_to_camel(kenmerk),
+                kenmerk=underscore_to_camel(kenmerk)
+                if get_setting("CAMELIZE_KANAAL_KENMERKEN")
+                else kenmerk,
                 help_text=self.get_help_text(
                     self.get_field(self.main_resource, kenmerk), kenmerk
                 ),
