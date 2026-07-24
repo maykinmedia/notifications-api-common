@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.12.1 (2026-07-24)
+-------------------
+
+**New features**
+
+* [maykinmedia/open-klant#598] add optional kanaal kenmerken description camelization (on by default)
+* [maykinmedia/open-klant#598] add create_failed_notification which creates a FailedNotification if LOG_NOTIFICATIONS_IN_DB is True
+
+
 0.12.0 (2026-07-15)
 -------------------
 
