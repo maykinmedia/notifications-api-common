@@ -42,13 +42,7 @@ Add the following apps
 
 to your ``INSTALLED_APPS`` setting.
 
-The following additional settings are available:
-
-.. automodule:: notifications_api_common.settings
-    :members:
-    :undoc-members:
-    :exclude-members: get_setting
-
+To see which settings are available, refer to the :ref:`ref_settings` reference.
 
 Make sure to migrate your database:
 

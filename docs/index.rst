@@ -25,6 +25,7 @@ Features
    quickstart
    delivery_guarantees
    setup_config
+   ref/index
    logging
    changelog
 
