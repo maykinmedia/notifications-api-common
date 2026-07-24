@@ -2,15 +2,33 @@
 Provide notifications kanaal/exchange classes.
 """
 
+import re
 from collections import defaultdict
 from typing import Dict, Literal, Tuple
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db.models import Field, Model
 
+from djangorestframework_camel_case.util import (
+    underscore_to_camel as _underscore_to_camel,
+)
 from rest_framework.request import Request
 
+from notifications_api_common.settings import get_setting
+
 KANAAL_REGISTRY = set()
+
+RE_UNDERSCORE = re.compile(r"[a-z]_[a-z]")
+
+
+def underscore_to_camel(input_: str | int) -> str | int:
+    """
+    Convert a string from under_score to camelCase.
+    """
+    if not isinstance(input_, str):
+        return input_
+
+    return re.sub(RE_UNDERSCORE, _underscore_to_camel, input_)
 
 
 class Kanaal:
@@ -91,7 +109,9 @@ class Kanaal:
         kenmerk_template = "* `{kenmerk}`: {help_text}"
         kenmerken = [
             kenmerk_template.format(
-                kenmerk=kenmerk,
+                kenmerk=underscore_to_camel(kenmerk)
+                if get_setting("CAMELIZE_KANAAL_KENMERKEN")
+                else kenmerk,
                 help_text=self.get_help_text(
                     self.get_field(self.main_resource, kenmerk), kenmerk
                 ),

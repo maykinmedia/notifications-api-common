@@ -1,5 +1,6 @@
 from unittest.mock import mock_open, patch
 
+from django.test import override_settings
 from django.test.testcases import call_command
 
 import pytest
@@ -29,7 +30,7 @@ De architectuur van de notificaties staat beschreven op <a href="https://github.
 **Kenmerken**
 
 * `name`: The name of the person
-* `address_street`: custom help text
+* `addressStreet`: custom help text
 
 **Resources en acties**
 
@@ -49,3 +50,18 @@ def test_generate_notificaties(mock_file):
     call_command("generate_notificaties", output_file=["foobar"])
 
     mock_file().write.assert_called_once_with(EXPECTED_OUTPUT)
+
+
+@pytest.mark.django_db
+@patch(
+    "notifications_api_common.management.commands.generate_notificaties.open",
+    new_callable=mock_open,
+)
+@override_settings(
+    CAMELIZE_KANAAL_KENMERKEN=False,
+)
+def test_generate_notificaties_with_camelization_disabled(mock_file):
+    call_command("generate_notificaties", output_file=["foobar"])
+    expected = EXPECTED_OUTPUT.replace("addressStreet", "address_street")
+
+    mock_file().write.assert_called_once_with(expected)
