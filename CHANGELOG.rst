@@ -2,6 +2,11 @@
 Changelog
 =========
 
+0.13.1 (2026-09-02)
+-------------------
+
+* revert [maykinmedia/open-klant#608] Change notificationserializer kenmerken dict field to json field
+
 0.13.0 (2026-07-24)
 -------------------
 
