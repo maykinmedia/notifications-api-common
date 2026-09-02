@@ -1,7 +1,7 @@
 notifications-api-common
 ========================
 
-:Version: 0.13.0
+:Version: 0.13.1
 :Source: https://github.com/maykinmedia/notifications-api-common
 :Keywords: notifications, REST, API, Common Ground, ZGW
 :PythonVersion: 3.12
