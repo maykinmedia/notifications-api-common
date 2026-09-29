@@ -31,6 +31,7 @@ De architectuur van de notificaties staat beschreven op <a href="https://github.
 
 * `name`: The name of the person
 * `addressStreet`: custom help text
+* `nullableKenmerk`: A boolean kenmerk that can be null
 
 **Resources en acties**
 
@@ -62,6 +63,8 @@ def test_generate_notificaties(mock_file):
 )
 def test_generate_notificaties_with_camelization_disabled(mock_file):
     call_command("generate_notificaties", output_file=["foobar"])
-    expected = EXPECTED_OUTPUT.replace("addressStreet", "address_street")
+    expected = EXPECTED_OUTPUT.replace("addressStreet", "address_street").replace(
+        "nullableKenmerk", "nullable_kenmerk"
+    )
 
     mock_file().write.assert_called_once_with(expected)
