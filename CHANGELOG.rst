@@ -2,6 +2,12 @@
 Changelog
 =========
 
+0.13.2 (2026-09-29)
+-------------------
+
+* [maykinmedia/open-klant#668] Workaround to transform ``null`` values for kenmerken to empty strings
+  (until https://github.com/open-zaak/open-notificaties/issues/434 is addressed)
+
 0.13.1 (2026-09-02)
 -------------------
 
