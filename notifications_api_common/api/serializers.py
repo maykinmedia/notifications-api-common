@@ -5,6 +5,21 @@ from rest_framework import serializers
 from ..validators import UntilNowValidator
 
 
+class NoneAsEmptyStringDictField(serializers.DictField):
+    """
+    Workaround for https://github.com/open-zaak/open-notificaties/issues/434
+
+    Currently Open Notificaties cannot handle nullable kenmerken, so we transform them
+    to empty strings instead.
+    """
+
+    def to_representation(self, value):
+        return {
+            str(key): "" if item is None else self.child.to_representation(item)
+            for key, item in value.items()
+        }
+
+
 class NotificatieSerializer(serializers.Serializer):
     kanaal = serializers.CharField(
         label=_("kanaal"),
@@ -51,7 +66,7 @@ class NotificatieSerializer(serializers.Serializer):
         validators=[UntilNowValidator()],
         help_text=_("Datum en tijd waarop de actie heeft plaatsgevonden."),
     )
-    kenmerken = serializers.DictField(
+    kenmerken = NoneAsEmptyStringDictField(
         label=_("kenmerken"),
         required=False,
         child=serializers.CharField(
