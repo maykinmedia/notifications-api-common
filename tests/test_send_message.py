@@ -21,12 +21,17 @@ TESTS_DIR = Path(__file__).parent
 @override_settings(NOTIFICATIONS_SOURCE="test")
 def test_api_create_person(api_client, notifications_config):
     url = reverse("person-list")
-    data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
+    data = {
+        "name": "John",
+        "address_street": "Grotestraat",
+        "address_number": "1",
+        "nullable_kenmerk": True,
+    }
 
     with patch(
         "notifications_api_common.viewsets.send_notification.delay"
     ) as mock_task:
-        response = api_client.post(url, data)
+        response = api_client.post(url, data, format="json")
 
     assert response.status_code == 201
     assert Person.objects.count() == 1
@@ -45,7 +50,57 @@ def test_api_create_person(api_client, notifications_config):
             "resourceUrl": f"http://testserver{person_url}",
             "actie": "create",
             "aanmaakdatum": "2022-01-01T00:00:00",
-            "kenmerken": {"name": "John", "addressStreet": "Grotestraat"},
+            "kenmerken": {
+                "name": "John",
+                "addressStreet": "Grotestraat",
+                "nullableKenmerk": "True",
+            },
+        },
+        None,
+    )
+
+
+@freeze_time("2022-01-01")
+@pytest.mark.django_db(transaction=True)
+@override_settings(NOTIFICATIONS_SOURCE="test")
+def test_api_create_person_nullable_kenmerk_transformed_to_empty_string(
+    api_client, notifications_config
+):
+    url = reverse("person-list")
+    data = {
+        "name": "John",
+        "address_street": "Grotestraat",
+        "address_number": "1",
+        "nullable_kenmerk": None,
+    }
+
+    with patch(
+        "notifications_api_common.viewsets.send_notification.delay"
+    ) as mock_task:
+        response = api_client.post(url, data, format="json")
+
+    assert response.status_code == 201
+    assert Person.objects.count() == 1
+
+    person = Person.objects.get()
+    assert person.name == "John"
+
+    # check notification message
+    person_url = reverse("person-detail", args=[person.pk])
+    mock_task.assert_called_once_with(
+        {
+            "kanaal": "personen",
+            "source": "test",
+            "hoofdObject": f"http://testserver{person_url}",
+            "resource": "person",
+            "resourceUrl": f"http://testserver{person_url}",
+            "actie": "create",
+            "aanmaakdatum": "2022-01-01T00:00:00",
+            "kenmerken": {
+                "name": "John",
+                "addressStreet": "Grotestraat",
+                "nullableKenmerk": "",
+            },
         },
         None,
     )
@@ -120,7 +175,7 @@ def test_api_create_person_unconfigured(api_client, notifications_config):
     data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
 
     with pytest.raises(RuntimeError):
-        api_client.post(url, data)
+        api_client.post(url, data, format="json")
 
     assert Person.objects.count() == 0
 
@@ -135,6 +190,6 @@ def test_api_create_person_unconfigured_notifications_guarantee_delivery_false(
     url = reverse("person-list")
     data = {"name": "John", "address_street": "Grotestraat", "address_number": "1"}
 
-    api_client.post(url, data)
+    api_client.post(url, data, format="json")
 
     assert Person.objects.count() == 1

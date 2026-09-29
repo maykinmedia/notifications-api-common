@@ -10,7 +10,7 @@ from .models import Person
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Person
-        fields = ("url", "name", "address_street", "address_number")
+        fields = ("url", "name", "address_street", "address_number", "nullable_kenmerk")
 
 
 # viewsets
@@ -20,7 +20,7 @@ class PersonViewSet(NotificationViewSetMixin, viewsets.ModelViewSet):
     notifications_kanaal = Kanaal(
         "personen",
         main_resource=Person(),
-        kenmerken=("name", "address_street"),
+        kenmerken=("name", "address_street", "nullable_kenmerk"),
         extra_kwargs={"address_street": {"help_text": "custom help text"}},
     )
 

@@ -8,3 +8,6 @@ class Person(models.Model):
     )
     address_street = models.CharField(_("street name"), max_length=255)
     address_number = models.CharField(_("house number"), max_length=10)
+    nullable_kenmerk = models.BooleanField(
+        null=True, help_text=_("A boolean kenmerk that can be null")
+    )
